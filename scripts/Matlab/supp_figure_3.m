@@ -4,8 +4,8 @@ clear all; close all;
 
 %% Data root directory
 
-mkdir ../../results Figure_4
-mkdir ../../results Figure_5
+
+mkdir ../../results supp_Figure_3
 
 root = strcat(fileparts(fileparts(pwd)), "\data\Train_data\Preprocessed\");
 
@@ -471,23 +471,29 @@ end
 %% Plot
 
 num_channels = 35;
-j = int32(((num_channels - 5)/5) + 1);    
 figure
 
 % Facilitation Computed Using Release Probability vs Stimulus Number
 
 
-    subplot(4, 2, 1)
+    subplot(3, 2, 1)
+    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Facil_PeakRate_WT_fit{2}{num_channels},"b--", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Facil_PeakRate_WT_fit{3}{num_channels},"b-", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Facil_PeakRate_AD_fit{2}{num_channels}, "r-", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Facil_PeakRate_AD_fit{3}{num_channels}, "r--", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on 
     plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Facil_PeakRate_WT{2}{num_channels},"b.", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Facil_PeakRate_WT{3}{num_channels},"b.", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
     plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Facil_PeakRate_AD{2}{num_channels},"r.", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
-    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Facil_PeakRate_WT_fit{2}{num_channels},"b-", 'LineWidth', 0.85, 'MarkerSize', 8)
+    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Facil_PeakRate_AD{3}{num_channels},"r.", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
-    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Facil_PeakRate_AD_fit{2}{num_channels}, "r-", 'LineWidth', 0.85, 'MarkerSize', 8)
-    legend({'WT', 'AD'},'Location', 'northeast', 'FontSize',2)
-    str = {'Higher AD Coupling'};
-    text(3, 0.7, str, 'FontSize', 5,'Color','k')
+    legend({'WT-NC', 'WT-HC', 'AD-HC','AD-NC'},'Location', 'northeast', 'FontSize',6)
     ylabel('Facilitation (n^{th}/1^{st}) (Peak Rate)','FontSize',4,'FontWeight','bold','Color','k')
     xlabel('Stimulus number','FontSize',4,'FontWeight','bold','Color','k')
     set(gca, 'box', 'off')
@@ -497,14 +503,22 @@ figure
     hold off
     
 
-    subplot(4, 2, 2)
+    subplot(3, 2, 2)
     plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Facil_Pr_WT{2}{num_channels},"b.", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Facil_Pr_WT_fit{2}{num_channels},"b--", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Facil_Pr_WT{3}{num_channels},"b.", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Facil_Pr_WT_fit{3}{num_channels},"b-", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
     plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Facil_Pr_AD{2}{num_channels},"r.", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
-    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Facil_Pr_WT_fit{2}{num_channels},"b-", 'LineWidth', 0.85, 'MarkerSize', 8)
-    hold on
     plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Facil_Pr_AD_fit{2}{num_channels}, "r-", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Facil_Pr_AD{3}{num_channels},"r.", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Facil_Pr_AD_fit{3}{num_channels}, "r--", 'LineWidth', 0.85, 'MarkerSize', 8)
     ylabel('Facilitation (n^{th}/1^{st}) (P_{r})','FontSize',4,'FontWeight','bold','Color','k')
     xlabel('Stimulus number','FontSize',4,'FontWeight','bold','Color','k')
     set(gca, 'box', 'off')
@@ -514,14 +528,22 @@ figure
     hold off
 
 
-    subplot(4, 2, 3)
+    subplot(3, 2, 3)
     plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Peak_Rate_WT{2}{num_channels},"b.", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Peak_Rate_WT_fit{2}{num_channels},"b--", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Peak_Rate_WT{3}{num_channels},"b.", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Peak_Rate_WT_fit{3}{num_channels},"b-", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
     plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Peak_Rate_AD{2}{num_channels},"r.", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
-    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Peak_Rate_WT_fit{2}{num_channels},"b-", 'LineWidth', 0.85, 'MarkerSize', 8)
-    hold on
     plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Peak_Rate_AD_fit{2}{num_channels}, "r-", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Peak_Rate_AD{3}{num_channels},"r.", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Peak_Rate_AD_fit{3}{num_channels}, "r--", 'LineWidth', 0.85, 'MarkerSize', 8)
     ylabel('Peak Rate (ms^{-1})','FontSize',4,'FontWeight','bold','Color','k')
     xlabel('Stimulus number','FontSize',4,'FontWeight','bold','Color','k')
     set(gca, 'box', 'off');
@@ -532,14 +554,22 @@ figure
     hold off
     
 
-    subplot(4, 2, 4)
+    subplot(3, 2, 4)
     plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Pr_WT{2}{num_channels},"b.", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Pr_WT_fit{2}{num_channels},"b--", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Pr_WT{3}{num_channels},"b.", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Pr_WT_fit{3}{num_channels},"b-", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
     plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Pr_AD{2}{num_channels},"r.", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
-    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Pr_WT_fit{2}{num_channels},"b-", 'LineWidth', 0.85, 'MarkerSize', 8)
-    hold on
     plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Pr_AD_fit{2}{num_channels}, "r-", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Pr_AD{3}{num_channels},"r.", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Pr_AD_fit{3}{num_channels}, "r--", 'LineWidth', 0.85, 'MarkerSize', 8)
     ylabel('Pr','FontSize',4,'FontWeight','bold','Color','k')
     xlabel('Stimulus number','FontSize',4,'FontWeight','bold','Color','k')
     set(gca, 'box', 'off');
@@ -548,77 +578,60 @@ figure
     set(gca,'XTickLabelMode','auto')
     title('(D)', 'FontSize', 7);
     hold off
-
-    
-% Plot RRP over time
-
-    subplot(4, 2, 5)    
-    plot(t(1: end), Fast_RRV_WT{2}((1: end), j) + Slow_RRV_WT{2}((1: end), j),"b-", 'LineWidth', 0.85, 'MarkerSize', 8)
-    hold on
-    plot(t(1: end), Fast_RRV_AD{2}((1: end), j) + Slow_RRV_AD{2}((1: end), j),"r-", 'LineWidth', 0.85, 'MarkerSize', 8)
-    hold on
-    ylabel('RRP','FontSize',4,'FontWeight','bold','Color','k')
-    xlabel('Time (ms)','FontSize',4,'FontWeight','bold','Color','k')
-    set(gca, 'box', 'off');
-    a = get(gca,'XTickLabel');
-    set(gca,'XTickLabel',a,'FontName','Times','fontsize',6);
-    set(gca,'XTickLabelMode','auto')
-    title('(E)', 'FontSize', 7);
-    hold off
-    
-   
-
-% Plot [Ca^{2+}]_{AZ} (\muM) for synapse with 35 VGCCs   
-    subplot(4, 2, 6) 
-    plot(t(1: end), Ca_VGCC_WT{2}((1: end), j),"b-", 'LineWidth', 0.85, 'MarkerSize', 8)
-    hold on
-    plot(t(1: end), Ca_VGCC_AD{2}((1: end), j),"r-", 'LineWidth', 0.85, 'MarkerSize', 8)
-    hold on
-    ylabel('[Ca^{2+}]_{AZ} (\muM)','FontSize',4,'FontWeight','bold','Color','k')
-    xlabel('Time (ms)','FontSize',4,'FontWeight','bold','Color','k')
-    xlim([0 450])
-    set(gca, 'box', 'off');
-    a = get(gca,'XTickLabel');
-    set(gca,'XTickLabel',a,'FontName','Times','fontsize',6) 
-    title('(F)', 'FontSize', 7);
-    hold off
+ 
 
 
 % Peak Asynchronous Rate
 
-    subplot(4, 2, 7)
+    subplot(3, 2, 5)
     plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Async_Peak_WT{2}{num_channels}*1e03,"b.", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(linspace(1, length(index_of_peaks), 200), Async_Peak_WT_fit{2}{num_channels}*1e03,"b--", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Async_Peak_WT{3}{num_channels}*1e03,"b.", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(linspace(1, length(index_of_peaks), 200), Async_Peak_WT_fit{3}{num_channels}*1e03,"b-", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
     plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Async_Peak_AD{2}{num_channels}*1e03,"r.", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
-    plot(linspace(1, length(index_of_peaks), 200), Async_Peak_WT_fit{2}{num_channels}*1e03,"b-", 'LineWidth', 0.85, 'MarkerSize', 8)
-    hold on
     plot(linspace(1, length(index_of_peaks), 200), Async_Peak_AD_fit{2}{num_channels}*1e03, "r-", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Async_Peak_AD{3}{num_channels}*1e03,"r.", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(linspace(1, length(index_of_peaks), 200), Async_Peak_AD_fit{3}{num_channels}*1e03, "r--", 'LineWidth', 0.85, 'MarkerSize', 8)
     ylabel('Peak Asynchronous Rate (10^{-3} (ms^{-1})','FontSize',4,'FontWeight','bold','Color','k')
     xlabel('Stimulus number','FontSize',4,'FontWeight','bold','Color','k')
     set(gca, 'box', 'off'); a = get(gca,'XTickLabel');
     set(gca,'XTickLabel',a,'FontName','Times','fontsize',6);
     set(gca,'XTickLabelMode','auto') 
-    title('(G)', 'FontSize', 7);
+    title('(E)', 'FontSize', 7);
     hold off
     
 
 % Peak Synchronous Rate
 
-    subplot(4, 2, 8)
+    subplot(3, 2, 6)
     plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Sync_Peak_WT{2}{num_channels},"b.", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Sync_Peak_WT_fit{2}{num_channels},"b--", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Sync_Peak_WT{3}{num_channels},"b.", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Sync_Peak_WT_fit{3}{num_channels},"b-", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
     plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Sync_Peak_AD{2}{num_channels},"r.", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
-    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Sync_Peak_WT_fit{2}{num_channels},"b-", 'LineWidth', 0.85, 'MarkerSize', 8)
-    hold on
     plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Sync_Peak_AD_fit{2}{num_channels}, "r-", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Sync_Peak_AD{3}{num_channels},"r.", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(linspace(1, length(index_of_peaks), length(index_of_peaks)), Sync_Peak_AD_fit{3}{num_channels}, "r--", 'LineWidth', 0.85, 'MarkerSize', 8)
     ylabel('Peak Synchronous Rate (ms^{-1})','FontSize',4,'FontWeight','bold','Color','k')
     xlabel('Stimulus number','FontSize',4,'FontWeight','bold','Color','k')
     set(gca, 'box', 'off'); a = get(gca,'XTickLabel');
     set(gca,'XTickLabel',a,'FontName','Times','fontsize',6);
     set(gca,'XTickLabelMode','auto') 
-    title('(H)', 'FontSize', 7);
+    title('(F)', 'FontSize', 7);
     hold off
     
 
@@ -630,227 +643,13 @@ height = 5.98*2.54; % cm
 set(gcf, 'PaperPosition', [0, 0, width / 2.54, height / 2.54])
 
 %Set the resolution of 1000dpi and save the plot in TIFF format 
-print -dpng -r1000 Figure_4
-saveas(gcf, 'Figure_4', 'fig')
-hold off
-
-
-movefile Figure_4.png ../../results/Figure_4
-movefile Figure_4.fig ../../results/Figure_4
-
-%% Correlation between Spike Train and Release Events
-
-
-[peaks, spike_times] = findpeaks(stimulus, t, 'MinPeakDistance', 20);
-
-WT_corrcoef = cell(1, num_conditions);
-AD_corrcoef = cell(1, num_conditions);
-phase_WT = cell(1, num_conditions);
-phase_AD = cell(1, num_conditions);
-synchrony_WT = cell(1, num_conditions);
-synchrony_AD = cell(1, num_conditions);
-relative_synchrony_change = cell(1, num_conditions);
-init_proba_WT = cell(1, num_conditions);
-init_proba_AD = cell(1, num_conditions);
-
-params_init_synchrony = [2.25 -1.75 -0.5027];
-params_synchrony = cell(1, num_conditions);
-relative_synchrony_change_fit = cell(1, num_conditions);
-lb_sync = [];
-ub_sync = [];
-
-for condition_index = 1:3
-    
-    if condition_index == 1
-        condition = "SameCoupling";
-    elseif condition_index == 2
-        condition = "AD_HigherCoupling";
-    elseif condition_index == 3
-        condition = "WT_HigherCoupling" ;
-    end
-    
-    for num_channels=5:5:150
-        j = int32(((num_channels - 5)/5) + 1);
-        [peak_rel_WT, peak_rel_time_WT] = findpeaks(rel_rate_WT{condition_index}(:, j), t, 'MinPeakDistance', 20);
-        [peak_rel_AD, peak_rel_time_AD] = findpeaks(rel_rate_AD{condition_index}(:, j), t, 'MinPeakDistance', 20);
-       
-        if length(peak_rel_time_WT) >= length(spike_times)
-            stop_ind_WT = length(spike_times);
-        elseif length(peak_rel_time_WT) <= length(spike_times)
-            stop_ind_WT = length(peak_rel_time_WT);
-        end 
-        
-        for m=1:stop_ind_WT-1
-            phase_WT{condition_index}(j, m) = (spike_times(m) - peak_rel_time_WT(m))/...
-                                              (peak_rel_time_WT(m+1)-peak_rel_time_WT(m));
-        end 
-            
-        if length(peak_rel_time_AD) >= length(spike_times)
-            stop_ind_AD = length(spike_times);
-        elseif length(peak_rel_time_AD) <= length(spike_times)
-            stop_ind_AD = length(peak_rel_time_AD);
-        end 
-        
-        for m=1:stop_ind_AD-1
-            phase_AD{condition_index}(j, m) = (spike_times(m) - peak_rel_time_AD(m))/...
-                                              (peak_rel_time_AD(m+1)-peak_rel_time_AD(m));
-        end  
-
-        
-        synchrony_WT{condition_index}(j) = real(mean(exp(0 + 2i*pi*phase_WT{condition_index}(j, :)),2));
-        synchrony_AD{condition_index}(j) = real(mean(exp(0 + 2i*pi*phase_AD{condition_index}(j, :)),2));
-        
-        init_proba_WT{condition_index}(j) = Pr_WT{condition_index}{num_channels}(1);
-        init_proba_AD{condition_index}(j) = Pr_AD{condition_index}{num_channels}(1);
-        
-        
-        relative_synchrony_change{condition_index}(j) = (synchrony_AD{condition_index}(j) - synchrony_WT{condition_index}(j));
-        
-        
-
-        x_synchrony = init_proba_WT{condition_index};
-        Y_synchrony = relative_synchrony_change{condition_index};
-        [params_sync] = lsqcurvefit(@(params_synchrony, x_synchrony)PolynomialFit(params_synchrony, x_synchrony),...
-                             params_init_synchrony, x_synchrony, Y_synchrony, lb_sync, ub_sync);
-
-        params_synchrony{condition_index} = params_sync;
-
-        relative_synchrony_change_fit{condition_index} = PolynomialFit(params_synchrony{condition_index},...
-                                                            init_proba_WT{condition_index});
-                                                  
-    end
-        
-end
-
-%% Figure 5
-
-figure
-
-    subplot(2, 2, 1)
-    ColorSet = jet(length(5:5:150));
-    set(gca, 'ColorOrder', ColorSet);
-    hold all;
-    for num_channels=5:5:150
-        j = int32(((num_channels - 5)/5) + 1);
-        plot(phase_WT{2}(j, :), 'LineWidth', 0.7, 'MarkerSize', 8)
-        hold on
-    end
-    num_channels = 35;
-    j = int32(((num_channels - 5)/5) + 1);
-    plot(phase_WT{2}(j, :), ".k", 'LineWidth', 0.7, 'MarkerSize', 6)
-    ylabel({'Phase (\phi)) (WT)'},'FontSize',4,'FontWeight','bold','Color','k')
-    xlabel('Stimulus number','FontSize',4,'FontWeight','bold','Color','k')
-    set(gca, 'box', 'off');
-    a = get(gca,'XTickLabel'); 
-    set(gca,'XTickLabel',a,'FontName','Times','fontsize',6);
-    set(gca,'XTickLabelMode','auto')
-    title('(A)', 'FontSize', 7);
-    hold off
-
-
-
-    subplot(2, 2, 2)
-    ColorSet = jet(length(5:5:150));
-    set(gca, 'ColorOrder', ColorSet);
-    hold all;
-    for num_channels=5:5:150
-        j = int32(((num_channels - 5)/5) + 1);
-        plot(phase_AD{2}(j, :), 'LineWidth', 0.7, 'MarkerSize', 8)
-        hold on
-    end
-    num_channels = 35;
-    j = int32(((num_channels - 5)/5) + 1);
-    plot(phase_AD{2}(j, :), ".k", 'LineWidth', 0.7, 'MarkerSize', 6)
-    set(gca, 'ColorOrder', ColorSet);
-    set(gca, 'Colormap', ColorSet);
-    cb = colorbar('Ticks',[0.1, 0.9],...
-             'TickLabels',["0.1 P_{r}",...
-                           "0.9 P_{r}"], 'Location','eastoutside');
-    cb.Position = [cb.Position(1)+0.1 cb.Position(2) cb.Position(3)-0.005 cb.Position(4)];
-    caxis([0 1])
-    ylabel({'Phase (\phi) (AD)'},'FontSize',4,'FontWeight','bold','Color','k')
-    xlabel('Stimulus number','FontSize',4,'FontWeight','bold','Color','k')
-    set(gca, 'box', 'off');
-    a = get(gca,'XTickLabel'); 
-    set(gca,'XTickLabel',a,'FontName','Times','fontsize',6);
-    set(gca,'XTickLabelMode','auto')
-    title('(B)', 'FontSize', 7);
-    hold off
-
-
-    subplot(2, 2, 3)
-    plot(init_proba_WT{2}, synchrony_WT{2}, '.-b', 'LineWidth', 0.85, 'MarkerSize', 8)
-    hold on
-    plot(init_proba_AD{2}, synchrony_AD{2}, '.-r', 'LineWidth', 0.85, 'MarkerSize', 8)
-    hold on
-    ylabel({'Synchrony'},'FontSize',4,'FontWeight','bold','Color','k')
-    xlabel('P_{r}','FontSize',4,'FontWeight','bold','Color','k')
-    legend({'WT', 'AD'},'Location', 'southwest', 'FontSize',3)
-    set(gca, 'box', 'off');
-    a = get(gca,'XTickLabel'); 
-    set(gca,'XTickLabel',a,'FontName','Times','fontsize',6);
-    set(gca,'XTickLabelMode','auto')
-    title("(C)")
-    hold off
-
-
-    subplot(2, 2, 4)
-    num_channels = (5:5:150);
-    plot(init_proba_WT{2}, relative_synchrony_change{2}, '.', 'color', '#D95319', 'LineWidth', 0.85, 'MarkerSize', 8)
-    hold on
-    plot(init_proba_WT{2}, relative_synchrony_change_fit{2}, '-', 'color', '#D95319', 'LineWidth', 0.85, 'MarkerSize', 8)
-    hold on
-    ylabel({'\Delta Synchrony'},'FontSize',4,'FontWeight','bold','Color','k')
-    xlabel('P_{r}','FontSize',4,'FontWeight','bold','Color','k')
-    set(gca, 'box', 'off');
-    a = get(gca,'XTickLabel'); 
-    set(gca,'XTickLabel',a,'FontName','Times','fontsize',6);
-    set(gca,'XTickLabelMode','auto')
-    title("(D)")
-    hold off
-
-    %Get Current Figure (GCF) & Set image size before saving image
-    width = 5.34*2.54;  % cm 
-    height = 3*2.54; % cm
-    set(gcf, 'PaperPosition', [0, 0, width / 2.54, height / 2.54])
-
-    %Set the resolution of 1000dpi and save the plot in TIFF format 
-    print -dpng -r1000 Figure_5
-    saveas(gcf, 'Figure_5', 'fig')
-    hold off
-
-
-movefile Figure_5.png ../../results/Figure_5
-movefile Figure_5.fig ../../results/Figure_5
-
-%% Plot zoomed in version of AZ calcium to show desynchronization
-
-figure  
-
-% Plot [Ca^{2+}]_{AZ} (\muM) for synapse with 35 VGCCs
-
-    plot(t(1: end), Ca_VGCC_WT{2}((1: end), j),"b-", 'LineWidth', 0.85, 'MarkerSize', 8)
-    hold on
-    plot(t(1: end), Ca_VGCC_AD{2}((1: end), j),"r-", 'LineWidth', 0.85, 'MarkerSize', 8)
-    hold on
-    ylabel('[Ca^{2+}]_{AZ} (\muM)','FontSize',4,'FontWeight','bold','Color','k')
-    xlabel('Time (ms)','FontSize',4,'FontWeight','bold','Color','k')
-    xlim([200 400])
-    ylim([0 5])
-    set(gca, 'box', 'off');
-    a = get(gca,'XTickLabel');
-    set(gca,'XTickLabel',a,'FontName','Times','fontsize',6) 
-    title('(B)', 'FontSize', 5);
-    hold off
-
-%Get Current Figure (GCF) & Set image size before saving image
-width = 8.2;  % cm 
-height = 5.6; % cm
-set(gcf, 'PaperPosition', [0, 0, width / 1.54, height / 1.54])
-
-%Set the resolution of 1000dpi and save the plot in TIFF format 
 print -dpng -r1000 Figure_3
+saveas(gcf, 'Figure_3', 'fig')
 hold off
+
+
+movefile Figure_3.png ../../results/supp_Figure_3
+movefile Figure_3.fig ../../results/supp_Figure_3
 
 
 %% %%%%%%%%%%%%%%%%%%%%%%%% FITTING   FUNCTIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -949,3 +748,4 @@ function y_real = PolynomialFit(a, x)
         
         y_real= yD;    
 end
+

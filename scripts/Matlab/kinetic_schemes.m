@@ -135,7 +135,7 @@ kIR = ((KI*Ca_ip3^5)*(1/(J01_tilda*Ca_ip3) + 1/(J45_tilda*Ca_ip3^5)))^-1;
 
 %%  Stochastic VGCC channel simulation %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Suhita Nadkarni P-Q- Type current %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Bischofberger, et al. (2002). https://doi.org/10.1523/jneurosci.22-24-10593.2002
 
     gPQ = 2.7e-09;                 % mS
     

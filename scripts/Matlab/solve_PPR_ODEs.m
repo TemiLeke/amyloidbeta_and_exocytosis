@@ -262,7 +262,7 @@ for coupling_cond=1:length(coupling_conditions)
             fclose(fileID);
 
             filename  = sprintf("%s_PPR_SyncRelRate_%d_VGCC.txt", cell_condition, k);
-            fileID = fopen(filename, "w");
+            fileID = fopen(strcat(data_directory, filename), "w");
             fprintf(fileID, "%.15f\n", mean(DualSensorModel_SyncRelRate));
             fclose(fileID);
 
@@ -282,7 +282,7 @@ for coupling_cond=1:length(coupling_conditions)
             fclose(fileID);
 
             filename  = sprintf("%s_PPR_RelRate_%d_VGCC.txt", cell_condition, k);
-            fileID = fopen(filename, "w");
+            fileID = fopen(strcat(data_directory, filename), "w");
             fprintf(fileID, "%.15f\n", mean(DualSensorModel_release_rate, 1));
             fclose(fileID);
 
@@ -292,7 +292,7 @@ for coupling_cond=1:length(coupling_conditions)
             fclose(fileID);
 
             filename  = sprintf("%s_PPR_RelVes_stim2_%d_VGCC.txt", cell_condition, k);
-            fileID = fopen(filename, "w");
+            fileID = fopen(strcat(data_directory, filename), "w");
             fprintf(fileID, "%.15f\n", mean(DualSensorModel_released_vesicles_stim_2, 1));
             fclose(fileID);
 
@@ -302,7 +302,7 @@ for coupling_cond=1:length(coupling_conditions)
             fclose(fileID);
 
             filename  = sprintf("%s_PPR_RelProba_stim2_%d_VGCC.txt", cell_condition, k);
-            fileID = fopen(filename, "w");
+            fileID = fopen(strcat(data_directory, filename), "w");
             fprintf(fileID, "%.15f\n", mean(DualSensorModel_release_proba_stim_2, 1));
             fclose(fileID);
 
