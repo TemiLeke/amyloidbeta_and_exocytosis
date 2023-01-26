@@ -70,9 +70,9 @@ W30 = y(59); W31 = y(60); W32 = y(61); W40 = y(62); W41 = y(63); W42 = y(64); W5
         
 %% Calculating Endoplasmic Reticulum Calcium %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    Cer = gamma_2*(Ct - Cac - Ca_ipr/gamma_1 - Ca_vgcc/gamma_3 - Cabeta/gamma_4);
+    Cer = gamma_2*(Ct - Cac - Ca_ipr/gamma_1 - Ca_vgcc/gamma_3);
 
-    
+
 %% Fluxes %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     [Ica_density, Iabeta_density, Jpmca, Jserca, Jvgcc, Jdiff_vgcc, Jipr, Jdiff,...
@@ -92,9 +92,9 @@ W30 = y(59); W31 = y(60); W32 = y(61); W40 = y(62); W41 = y(63); W42 = y(64); W5
 %% Calcium Dynamics %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
   
-    dCacdt  =  (Jdiff_vgcc + Jdiff_abeta_cyt + Jin + Jdiff + Jleak - Jpmca - Jserca);
+    dCacdt  =  (Jdiff_vgcc + Jin + Jdiff + Jleak - Jpmca - Jserca);
     dCa_iprdt  = gamma_1*(Jipr - Jdiff) + JCa_vgcc_Ca_ipr;
-    dCa_vgccdt = gamma_3*(Jvgcc - Jdiff_vgcc - JCa_vgcc_Ca_ipr/gamma_1) + Jdiff_abeta;
+    dCa_vgccdt = gamma_3*(Jvgcc + Jabeta - Jdiff_vgcc - JCa_vgcc_Ca_ipr/gamma_1);
     dCabetadt = gamma_4*(Jabeta - Jdiff_abeta/gamma_3 - Jdiff_abeta_cyt);
     dCtdt  = (Jin + Jvgcc + Jabeta - Jpmca);
 

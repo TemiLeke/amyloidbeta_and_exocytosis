@@ -9,7 +9,8 @@ root = strcat(fileparts(fileparts(pwd)), "/data/SingleAP_data/");
 
 %%   PPR, Probability, Release Rates and other plots
 
-t = importdata(strcat(root, "time.txt"));
+base_dir = strcat(fileparts(fileparts(pwd)), "/data/");
+t = importdata(strcat(base_dir, "singleap_time.txt"));
 
 num_conditions = 3;                      % condition 1 corresponds to SamCoupling, 2 - AD Higher Coupling, 3 - WT Higher Coupling
 
@@ -32,7 +33,7 @@ Ca_ABETA_WT = cell(1, num_conditions);
 min_channel_num = 5;
 max_channel_num = 150;
 num_channels = int32(((max_channel_num - 5)/5) + 1);
-coupling_conditions = ["abeta", "ip3r_nc", "ip3r_nc_and_abeta", "ip3r_hc_and_abeta"];
+coupling_conditions = ["ip3r_nc", "ip3r_nc_and_abeta", "ip3r_hc_and_abeta"];
 
 
 for coupling_cond=1:length(coupling_conditions)
@@ -41,14 +42,12 @@ for coupling_cond=1:length(coupling_conditions)
     condition = coupling_conditions(coupling_cond);
     
 
-    if condition == "abeta"
+    if condition == "ip3r_nc"
         k = 1;
-    elseif condition == "ip3r_nc"
-        k = 2;
     elseif condition == "ip3r_nc_and_abeta"
-        k = 3;
+        k = 2;
     elseif condition == "ip3r_hc_and_abeta"
-        k = 4;
+        k = 3;
     end
 
 
@@ -113,19 +112,17 @@ for coupling_cond=1:length(coupling_conditions)
 
     condition = coupling_conditions(coupling_cond);
     
-    if condition == "abeta"
+    if condition == "ip3r_nc"
         condition_index = 1;
-    elseif condition == "ip3r_nc"
-        condition_index = 2;
     elseif condition == "ip3r_nc_and_abeta"
-        condition_index = 3;
+        condition_index = 2;
     elseif condition == "ip3r_hc_and_abeta"
-        condition_index = 4;
+        condition_index = 3;
     end
 
-    Pr_matrix_WT{condition_index} = rel_proba_WT{condition_index}(end, :);
+    %Pr_matrix_WT{condition_index} = rel_proba_WT{condition_index}(end, :);
 
-    %Pr_matrix_WT{condition_index} = total_rel_ves_WT{condition_index}(30000, :)./total_RRV_WT{condition_index}(30000-1, :);
+    Pr_matrix_WT{condition_index} = total_rel_ves_WT{condition_index}(30000, :)./total_RRV_WT{condition_index}(30000-1, :);
     
     x = log10(channel_number);
     Y_WT = Pr_matrix_WT{condition_index};
@@ -158,19 +155,16 @@ for coupling_cond=1:length(coupling_conditions)
     condition = coupling_conditions(coupling_cond);
     
     
-    if condition == "abeta"
+    if condition == "ip3r_nc"
         condition_index = 1;
-    elseif condition == "ip3r_nc"
-        condition_index = 2;
     elseif condition == "ip3r_nc_and_abeta"
-        condition_index = 3;
+        condition_index = 2;
     elseif condition == "ip3r_hc_and_abeta"
-        condition_index = 4;
+        condition_index = 3;
     end
+
         
-    Peak_RelRate_WT{condition_index} = max(rel_rate_WT{condition_index}, [], 1);
-    %Peak_RelRate_AD{condition_index} = max(rel_rate_AD{condition_index}, [], 1);
-    
+    Peak_RelRate_WT{condition_index} = max(rel_rate_WT{condition_index}, [], 1);    
     
     x = log10(channel_number);
     Y_WT = Peak_RelRate_WT{condition_index};
@@ -204,18 +198,15 @@ for coupling_cond=1:length(coupling_conditions)
     condition = coupling_conditions(coupling_cond);
     
     
-    if condition == "abeta"
+    if condition == "ip3r_nc"
         condition_index = 1;
-    elseif condition == "ip3r_nc"
-        condition_index = 2;
     elseif condition == "ip3r_nc_and_abeta"
-        condition_index = 3;
+        condition_index = 2;
     elseif condition == "ip3r_hc_and_abeta"
-        condition_index = 4;
+        condition_index = 3;
     end
-        
+ 
     SyncPeak_RelRate_WT{condition_index} = max(Sync_RelRate_WT{condition_index}, [], 1);
-    %SyncPeak_RelRate_AD{condition_index} = max(Sync_RelRate_AD{condition_index}, [], 1);
     
     
     x = log10(channel_number);
@@ -250,18 +241,16 @@ for coupling_cond=1:length(coupling_conditions)
     condition = coupling_conditions(coupling_cond);
     
     
-    if condition == "abeta"
+    if condition == "ip3r_nc"
         condition_index = 1;
-    elseif condition == "ip3r_nc"
-        condition_index = 2;
     elseif condition == "ip3r_nc_and_abeta"
-        condition_index = 3;
+        condition_index = 2;
     elseif condition == "ip3r_hc_and_abeta"
-        condition_index = 4;
+        condition_index = 3;
     end
+
         
     AsyncPeak_RelRate_WT{condition_index} = max(Async_RelRate_WT{condition_index}, [], 1);
-    %SyncPeak_RelRate_AD{condition_index} = max(Async_RelRate_AD{condition_index}, [], 1);
     
     
     x = log10(channel_number);
@@ -296,21 +285,18 @@ for coupling_cond=1:length(coupling_conditions)
     condition = coupling_conditions(coupling_cond);
     
     
-    if condition == "abeta"
+    if condition == "ip3r_nc"
         condition_index = 1;
-    elseif condition == "ip3r_nc"
-        condition_index = 2;
     elseif condition == "ip3r_nc_and_abeta"
-        condition_index = 3;
+        condition_index = 2;
     elseif condition == "ip3r_hc_and_abeta"
-        condition_index = 4;
+        condition_index = 3;
     end
 
+
     VGCC_Ca_WT = cumtrapz(t, Ca_VGCC_WT{condition_index}, 1);
-    %VGCC_Ca_AD = cumtrapz(t, Ca_VGCC_AD{condition_index}, 1);
      
     Cummulative_VGCC_Ca_WT{condition_index} = VGCC_Ca_WT(100000,:);
-    %Cummulative_VGCC_Ca_AD{condition_index} = VGCC_Ca_AD(100000,:);
     
     x_WT = Pr_matrix_WT{condition_index};
     Y_WT = Cummulative_VGCC_Ca_WT{condition_index};
@@ -344,18 +330,16 @@ for coupling_cond=1:length(coupling_conditions)
     condition = coupling_conditions(coupling_cond);
     
     
-    if condition == "abeta"
+    if condition == "ip3r_nc"
         condition_index = 1;
-    elseif condition == "ip3r_nc"
-        condition_index = 2;
     elseif condition == "ip3r_nc_and_abeta"
-        condition_index = 3;
+        condition_index = 2;
     elseif condition == "ip3r_hc_and_abeta"
-        condition_index = 4;
+        condition_index = 3;
     end
 
+
     Vesicles_Released_WT{condition_index} = total_rel_ves_WT{condition_index}(100000, :);
-    %Vesicles_Released_AD{condition_index} = total_rel_ves_AD{condition_index}(100000, :);
     
    
     x_WT = log10(channel_number);
@@ -393,20 +377,17 @@ for coupling_cond=1:length(coupling_conditions)
     condition = coupling_conditions(coupling_cond);
     
     
-    if condition == "abeta"
+    if condition == "ip3r_nc"
         condition_index = 1;
-    elseif condition == "ip3r_nc"
-        condition_index = 2;
     elseif condition == "ip3r_nc_and_abeta"
-        condition_index = 3;
+        condition_index = 2;
     elseif condition == "ip3r_hc_and_abeta"
-        condition_index = 4;
+        condition_index = 3;
     end
+
     
     sync_total_rel_ves_WT{condition_index} = cumtrapz(t, Sync_RelRate_WT{condition_index}, 1);
-    SyncVesicles_Released_WT{condition_index} = sync_total_rel_ves_WT{condition_index}(end, :);
-    %SyncVesicles_Released_AD{condition_index} = sync_total_rel_ves_AD{condition_index}(end, :);
-    
+    SyncVesicles_Released_WT{condition_index} = sync_total_rel_ves_WT{condition_index}(end, :);    
    
     x_WT = log10(channel_number);
     Y_WT = SyncVesicles_Released_WT{condition_index};
@@ -441,19 +422,17 @@ for coupling_cond=1:length(coupling_conditions)
 
     condition = coupling_conditions(coupling_cond);
        
-    if condition == "abeta"
+    if condition == "ip3r_nc"
         condition_index = 1;
-    elseif condition == "ip3r_nc"
-        condition_index = 2;
     elseif condition == "ip3r_nc_and_abeta"
-        condition_index = 3;
+        condition_index = 2;
     elseif condition == "ip3r_hc_and_abeta"
-        condition_index = 4;
+        condition_index = 3;
     end
+
     
     Async_total_rel_ves_WT{condition_index} = cumtrapz(t, Async_RelRate_WT{condition_index}, 1);
     AsyncVesicles_Released_WT{condition_index} = Async_total_rel_ves_WT{condition_index}(end, :);
-    %AsyncVesicles_Released_AD{condition_index} = Async_total_rel_ves_AD{condition_index}(end, :);
     
    
     x_WT = log10(channel_number);
@@ -489,20 +468,17 @@ for coupling_cond=1:length(coupling_conditions)
 
     condition = coupling_conditions(coupling_cond);
        
-    if condition == "abeta"
+    if condition == "ip3r_nc"
         condition_index = 1;
-    elseif condition == "ip3r_nc"
-        condition_index = 2;
     elseif condition == "ip3r_nc_and_abeta"
-        condition_index = 3;
+        condition_index = 2;
     elseif condition == "ip3r_hc_and_abeta"
-        condition_index = 4;
+        condition_index = 3;
     end
+
     
     Spont_total_rel_ves_WT{condition_index} = cumtrapz(t, Spont_RelRate_WT{condition_index}, 1);
-    SpontVesicles_Released_WT{condition_index} = Spont_total_rel_ves_WT{condition_index}(end, :);
-    %SpontVesicles_Released_AD{condition_index} = Spont_total_rel_ves_AD{condition_index}(end, :);
-    
+    SpontVesicles_Released_WT{condition_index} = Spont_total_rel_ves_WT{condition_index}(end, :);    
    
     x_WT = channel_number;
     Y_WT = SpontVesicles_Released_WT{condition_index};
@@ -541,28 +517,22 @@ for coupling_cond=1:length(coupling_conditions)
 
     condition = coupling_conditions(coupling_cond);
     
-    if condition == "abeta"
+    if condition == "ip3r_nc"
         condition_index = 1;
-    elseif condition == "ip3r_nc"
-        condition_index = 2;
     elseif condition == "ip3r_nc_and_abeta"
-        condition_index = 3;
+        condition_index = 2;
     elseif condition == "ip3r_hc_and_abeta"
-        condition_index = 4;
+        condition_index = 3;
     end
-        
     
     [max_value_WT, max_index_WT] = max(rel_rate_WT{condition_index}, [], 1);
-    %[max_value_AD, max_index_AD] = max(rel_rate_AD{condition_index}, [], 1);
-  
+
     for k=5:5:150
         
         j = int32(((k - 5)/5) + 1); 
         peak_index_WT = max_index_WT(1, j);
         time_to_peak_WT{condition_index}(1, j) = t(peak_index_WT);
-        
-        %peak_index_AD = max_index_AD(1, j);
-        %time_to_peak_AD{condition_index}(1, j) = t(peak_index_AD);
+      
             
     end
     
@@ -597,15 +567,14 @@ for coupling_cond=1:length(coupling_conditions)
 
     condition = coupling_conditions(coupling_cond);
     
-    if condition == "abeta"
+    if condition == "ip3r_nc"
         condition_index = 1;
-    elseif condition == "ip3r_nc"
-        condition_index = 2;
     elseif condition == "ip3r_nc_and_abeta"
-        condition_index = 3;
+        condition_index = 2;
     elseif condition == "ip3r_hc_and_abeta"
-        condition_index = 4;
+        condition_index = 3;
     end
+
 
     x_WT = channel_number;
     Y_WT = Cummulative_VGCC_Ca_WT{condition_index};
@@ -659,20 +628,18 @@ for coupling_cond=1:length(coupling_conditions)
        
     sprintf(condition)
     
-    if condition == "abeta"
+    if condition == "ip3r_nc"
         condition_index = 1;
-    elseif condition == "ip3r_nc"
-        condition_index = 2;
     elseif condition == "ip3r_nc_and_abeta"
-        condition_index = 3;
+        condition_index = 2;
     elseif condition == "ip3r_hc_and_abeta"
-        condition_index = 4;
+        condition_index = 3;
     end
+
     
         
     
     [max_value_WT, max_index_WT] = max(rel_rate_WT{condition_index}, [], 1);
-    %[max_value_AD, max_index_AD] = max(rel_rate_AD{condition_index}, [], 1);
   
     for k=5:5:150
         
@@ -691,21 +658,7 @@ for coupling_cond=1:length(coupling_conditions)
                               
         P2B_Cummulative_VGCC_Ca_WT{condition_index}(1, j) = VGCC_Ca_WT(end);
        
-        
-        %{
-        release_rate_AD = rel_rate_AD{condition_index}(max_index_AD(1, j):end, j);
-        time_AD = t(1:end_idx-max_index_AD(1, j)+1);
-        basal_index_AD = find(release_rate_AD <= threshold, 1);
-        time_to_base_AD{condition_index}(1, j) = time_AD(basal_index_AD); 
-        
-        ca_end_idx_AD = find(t >= str2double(num2str(time_to_base_AD{condition_index}(1, j) +...
-                     t(max_index_AD(1, j)))), 1);
-                 
-        VGCC_Ca_AD = cumtrapz(t(max_index_AD(1, j): ca_end_idx_AD),...
-                     Ca_VGCC_AD{condition_index}(max_index_AD(1, j):ca_end_idx_AD));
-        P2B_Cummulative_VGCC_Ca_AD{condition_index}(1, j) = VGCC_Ca_AD(end);
-        %}
-    
+       
     end
     
     
@@ -717,17 +670,7 @@ for coupling_cond=1:length(coupling_conditions)
     params_ttb_WT{condition_index} = params_WT;
     
     time_to_base_WT_fit{condition_index} = ExponentialPolyFit(params_ttb_WT{condition_index}, Pr_matrix_WT{condition_index});
-    
-    %{
-    x_AD = Pr_matrix_AD{condition_index};
-    Y_AD = time_to_base_AD{condition_index};
-    [params_AD] = lsqcurvefit(@(params_AD, x_AD)ExponentialPolyFit(params_AD, x_AD),params_init_ttb, x_AD, Y_AD, lb_ttb,ub_ttb);
-                                    
-    params_ttb_AD{condition_index} = params_AD;
-    
-    time_to_base_AD_fit{condition_index} = ExponentialPolyFit(params_ttb_AD{condition_index}, Pr_matrix_AD{condition_index});
-    
-    %}
+   
  
    
     x_WT = Pr_matrix_WT{condition_index};
@@ -740,37 +683,23 @@ for coupling_cond=1:length(coupling_conditions)
     P2B_Cummulative_VGCC_Ca_WT_fit{condition_index} = ExponentialPolyFit(params_p2bcum_WT{condition_index},...
                                                         Pr_matrix_WT{condition_index});
     
-    %{
-    x_AD = Pr_matrix_AD{condition_index};
-    Y_AD = P2B_Cummulative_VGCC_Ca_AD{condition_index};
-    [params_AD] = lsqcurvefit(@(params_AD, x_AD) ExponentialPolyFit(params_AD, x_AD),params_init_p2bcum, x_AD,...
-                 Y_AD, lb_p2bcum, ub_p2bcum);
-                                    
-    params_p2bcum_AD{condition_index} = params_AD;
-    
-    P2B_Cummulative_VGCC_Ca_AD_fit{condition_index} =  ExponentialPolyFit(params_p2bcum_AD{condition_index},...
-                                                      Pr_matrix_AD{condition_index});
-    %}
-    
-    
 end
-           
-
+ 
 %% Plot overall, synchronous, asynchronous, and recruitment rates for synapse with 35 VGCCs
 
 figure
 
 subplot(4, 2, 1)
-plot(t(1: 30000), rel_rate_WT{1}((1: 30000), 7),"k-", 'LineWidth',  0.85, 'MarkerSize', 8)
+plot(t(1: 30000), rel_rate_WT{1}((1: 30000), 7),"b-", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
-plot(t(1: 30000), rel_rate_WT{2}((1: 30000), 7),"b-", 'LineWidth',  0.85, 'MarkerSize', 8)
+plot(t(1: 30000), rel_rate_WT{2}((1: 30000), 7),"k-", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
 plot(t(1: 30000), rel_rate_WT{3}((1: 30000), 7),"r-", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
 %plot(t(1: 30000), rel_rate_WT{4}((1: 30000), 7),'-', "color", "#A2142F", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
 %legend({'A\beta', 'IP_{3}R-NC', 'A\beta & IP_{3}R-NC', 'A\beta & IP_{3}R-HC'},'Location', 'northeast', 'FontSize',6)
-legend({'A\beta', 'IP_{3}R', 'A\beta & IP_{3}R'},'Location', 'northeast', 'FontSize',6)
+legend({'IP_{3}R-NC', 'A\beta & IP_{3}R-NC', 'A\beta & IP_{3}R-HC'},'Location', 'northeast', 'FontSize',6)
 ylabel('Release Rate (ms^{-1})','FontSize',4,'FontWeight','bold','Color','k')
 xlabel('Time (ms)','FontSize',4,'FontWeight','bold','Color','k')
 set(gca, 'box', 'off')
@@ -781,17 +710,17 @@ title('(A)', 'FontSize', 7);
 hold off
 
 subplot(4, 2, 2)
-plot(channel_number, Pr_matrix_WT{1},"k.", 'LineWidth',  0.85, 'MarkerSize', 8)
+plot(channel_number, Pr_matrix_WT{1},"b.", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
-plot(channel_number, Pr_matrix_WT{2} ,"b.", 'LineWidth',  0.85, 'MarkerSize', 8)
+plot(channel_number, Pr_matrix_WT{2} ,"k.", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
 plot(channel_number, Pr_matrix_WT{3} ,"r.", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
 %plot(channel_number, Pr_matrix_WT{4} ,'.', "color", "#A2142F", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
-plot(channel_number, Pr_matrix_WT_fit{1} ,"k-", 'LineWidth',  0.85, 'MarkerSize', 8)
+plot(channel_number, Pr_matrix_WT_fit{1} ,"b-", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
-plot(channel_number, Pr_matrix_WT_fit{2}, "b-", 'LineWidth',  0.85, 'MarkerSize', 8)
+plot(channel_number, Pr_matrix_WT_fit{2}, "k-", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
 plot(channel_number, Pr_matrix_WT_fit{3}, "r-", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
@@ -808,9 +737,9 @@ hold off
 
 
 subplot(4, 2, 3)
-plot(t(1: 30000), total_RRV_WT{1}((1: 30000), 7),"k-", 'LineWidth',  0.85, 'MarkerSize', 8)
+plot(t(1: 30000), total_RRV_WT{1}((1: 30000), 7),"b-", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
-plot(t(1: 30000), total_RRV_WT{2}((1: 30000), 7),"b-", 'LineWidth',  0.85, 'MarkerSize', 8)
+plot(t(1: 30000), total_RRV_WT{2}((1: 30000), 7),"k-", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
 plot(t(1: 30000), total_RRV_WT{3}((1: 30000), 7), "r-", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
@@ -825,13 +754,13 @@ set(gca,'XTickLabelMode','auto')
 title('(C)', 'FontSize', 7);
 
 subplot(4, 2, 4)
-plot(channel_number, Cummulative_VGCC_Ca_WT{1} ,"K.", 'LineWidth',  0.85, 'MarkerSize', 8)
+plot(channel_number, Cummulative_VGCC_Ca_WT{1} ,"b.", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
-plot(channel_number, Cummul_VGCC_Ca_WT_fit{1} ,"K-", 'LineWidth',  0.85, 'MarkerSize', 8)
+plot(channel_number, Cummul_VGCC_Ca_WT_fit{1} ,"b-", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
-plot(channel_number, Cummulative_VGCC_Ca_WT{2}, "b.", 'LineWidth',  0.85, 'MarkerSize', 8)
+plot(channel_number, Cummulative_VGCC_Ca_WT{2}, "k.", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
-plot(channel_number, Cummul_VGCC_Ca_WT_fit{2} ,"b-", 'LineWidth',  0.85, 'MarkerSize', 8)
+plot(channel_number, Cummul_VGCC_Ca_WT_fit{2} ,"k-", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
 plot(channel_number, Cummulative_VGCC_Ca_WT{3}, "r.", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
@@ -851,9 +780,9 @@ hold off
 
 
 subplot(4, 2, 5)
-plot(t(1: 30000), Async_RelRate_WT{1}((1: 30000), 7)*1e03,"k-", 'LineWidth',  0.85, 'MarkerSize', 8)
+plot(t(1: 30000), Async_RelRate_WT{1}((1: 30000), 7)*1e03,"b-", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
-plot(t(1: 30000), Async_RelRate_WT{2}((1: 30000), 7)*1e03,"b-", 'LineWidth',  0.85, 'MarkerSize', 8)
+plot(t(1: 30000), Async_RelRate_WT{2}((1: 30000), 7)*1e03,"k-", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
 plot(t(1: 30000), Async_RelRate_WT{3}((1: 30000), 7)*1e03, "r-", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
@@ -869,13 +798,13 @@ title('(E)', 'FontSize', 7);
 hold off
 
 subplot(4, 2, 6)
-plot(channel_number, AsyncVesicles_Released_WT{1},"k.-", 'LineWidth',  0.85, 'MarkerSize', 8)
+plot(channel_number, AsyncVesicles_Released_WT{1},"b.-", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
-%plot(channel_number, AsyncVesicles_Released_WT_fit{1} ,"k-", 'LineWidth',  0.85, 'MarkerSize', 8)
+%plot(channel_number, AsyncVesicles_Released_WT_fit{1} ,"b-", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
-plot(channel_number, AsyncVesicles_Released_WT{2}, "b.-", 'LineWidth',  0.85, 'MarkerSize', 8)
+plot(channel_number, AsyncVesicles_Released_WT{2}, "k.-", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
-%plot(channel_number, AsyncVesicles_Released_WT_fit{2} ,"b-", 'LineWidth',  0.85, 'MarkerSize', 8)
+%plot(channel_number, AsyncVesicles_Released_WT_fit{2} ,"k-", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
 plot(channel_number, AsyncVesicles_Released_WT{3}, "r.-", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
@@ -896,9 +825,9 @@ hold off
 
 %{
 subplot(4, 2, 5)
-plot(t(1: 30000), Spont_RelRate_WT{1}((1: 30000), 7)*1e03,"k-", 'LineWidth',  0.85, 'MarkerSize', 8)
+plot(t(1: 30000), Spont_RelRate_WT{1}((1: 30000), 7)*1e03,"b-", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
-plot(t(1: 30000), Spont_RelRate_WT{2}((1: 30000), 7)*1e03,"b-", 'LineWidth',  0.85, 'MarkerSize', 8)
+plot(t(1: 30000), Spont_RelRate_WT{2}((1: 30000), 7)*1e03,"k-", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
 plot(t(1: 30000), Spont_RelRate_WT{3}((1: 30000), 7)*1e03, "r-", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
@@ -915,13 +844,13 @@ hold off
 
 
 subplot(4, 2, 6)
-plot(channel_number, SpontVesicles_Released_WT{1}*1e03,"k.", 'LineWidth',  0.85, 'MarkerSize', 8)
+plot(channel_number, SpontVesicles_Released_WT{1}*1e03,"b.", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
-plot(channel_number, SpontVesicles_Released_WT_fit{1}*1e03 ,"k-", 'LineWidth',  0.85, 'MarkerSize', 8)
+plot(channel_number, SpontVesicles_Released_WT_fit{1}*1e03 ,"b-", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
-plot(channel_number, SpontVesicles_Released_WT{2}*1e03, "b.", 'LineWidth',  0.85, 'MarkerSize', 8)
+plot(channel_number, SpontVesicles_Released_WT{2}*1e03, "k.", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
-plot(channel_number, SpontVesicles_Released_WT_fit{2}*1e03,"b-", 'LineWidth',  0.85, 'MarkerSize', 8)
+plot(channel_number, SpontVesicles_Released_WT_fit{2}*1e03,"k-", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
 plot(channel_number, SpontVesicles_Released_WT{3}*1e03, "r.", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
@@ -941,13 +870,13 @@ hold off
 %}
 
 subplot(4, 2, 7)
-plot(Pr_matrix_WT{1}, time_to_base_WT{1} ,"k.", 'LineWidth',  0.85, 'MarkerSize', 8)
+plot(Pr_matrix_WT{1}, time_to_base_WT{1} ,"b.", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
-plot(Pr_matrix_WT{1}, time_to_base_WT_fit{1} ,"k-", 'LineWidth',  0.85, 'MarkerSize', 8)
+plot(Pr_matrix_WT{1}, time_to_base_WT_fit{1} ,"b-", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
-plot(Pr_matrix_WT{2}, time_to_base_WT{2} ,"b.", 'LineWidth',  0.85, 'MarkerSize', 8)
+plot(Pr_matrix_WT{2}, time_to_base_WT{2} ,"k.", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
-plot(Pr_matrix_WT{2}, time_to_base_WT_fit{2} ,"b-", 'LineWidth',  0.85, 'MarkerSize', 8)
+plot(Pr_matrix_WT{2}, time_to_base_WT_fit{2} ,"k-", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
 plot(Pr_matrix_WT{3}, time_to_base_WT{3} ,"r.", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
@@ -967,13 +896,13 @@ title('(G)', 'FontSize', 7);
 hold off
 
 subplot(4, 2, 8)
-plot(Pr_matrix_WT{1}, P2B_Cummulative_VGCC_Ca_WT{1} ,"k.", 'LineWidth',  0.85, 'MarkerSize', 8)
+plot(Pr_matrix_WT{1}, P2B_Cummulative_VGCC_Ca_WT{1} ,"b.", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
-plot(Pr_matrix_WT{1}, P2B_Cummulative_VGCC_Ca_WT_fit{1} ,"k-", 'LineWidth',  0.85, 'MarkerSize', 8)
+plot(Pr_matrix_WT{1}, P2B_Cummulative_VGCC_Ca_WT_fit{1} ,"b-", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
-plot(Pr_matrix_WT{2}, P2B_Cummulative_VGCC_Ca_WT{2} ,"b.", 'LineWidth',  0.85, 'MarkerSize', 8)
+plot(Pr_matrix_WT{2}, P2B_Cummulative_VGCC_Ca_WT{2} ,"k.", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
-plot(Pr_matrix_WT{2}, P2B_Cummulative_VGCC_Ca_WT_fit{2} ,"b-", 'LineWidth',  0.85, 'MarkerSize', 8)
+plot(Pr_matrix_WT{2}, P2B_Cummulative_VGCC_Ca_WT_fit{2} ,"k-", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on
 plot(Pr_matrix_WT{3}, P2B_Cummulative_VGCC_Ca_WT{3} ,"r.", 'LineWidth',  0.85, 'MarkerSize', 8)
 hold on

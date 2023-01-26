@@ -4,7 +4,7 @@ function    [Ica_density, Iabeta_density, Jpmca, Jserca, Jvgcc, Jdiff_vgcc, Jipr
                                       IcaPQ, Po_ip3r, coupling_condition, cell_condition,...
                                       time, pore_open_times, calcium_source)
 
-global N_vgcc N_pores
+global N_vgcc N_pores SCL
 
 %% PMCA FLUX
     
@@ -96,7 +96,7 @@ global N_vgcc N_pores
 
 
     rpore = 2.6e-03;                                        % um      Radius of pore (Ref. At least 1.3nm from Lin H. 2001, Jang H 2007., Sepulveda. 2010)
-    pore_current = 0.25e-06;                                 % uA      Current per permeability level Demuro et al 2011 J Cell Biol
+    pore_current = SCL*0.5e-06;                                 % uA      Current per permeability level Demuro et al 2011 J Cell Biol
     pore_domain_number = 1;                                 %         Number of independent clusters. 
     pore_domain_radius = 0.08;                              % um      Raidus of sub-plasmalemmal region/domain of calcium around pore.
     pore_domain_area = pi*pore_domain_radius^2;             % um^2    Area of sub-plasmalemmal region/domain of calcium around pore. Syed et. al version posted April 30, 2022. ; https://doi.org/10.1101/2022.04.29.490101
@@ -105,7 +105,7 @@ global N_vgcc N_pores
     Vol_pore = (1e-15)*(2/3)*pi*(rpore^3);                  % Litre   Volume of hemispher3 over the pore (Assuming a spherical pore/channel)
     pore_cluster_area = (pi)*(pore_radius)^2;               % um^2    Area of cluster of pores. 
 
-    pore_density = N_pores / (pore_domain_number * pore_domain_area);
+    pore_density = N_pores / (active_zone_number * active_zone_area);
     
     if any(pore_open_times==time)
         Iabeta = pore_density * pore_cluster_area * pore_current;
@@ -121,7 +121,7 @@ global N_vgcc N_pores
     end
 
 
-    if (calcium_source == "ip3r_nc_and_abeta" || calcium_source == "ip3r_hc_and_abeta" || calcium_source=="abeta")
+    if (calcium_source == "ip3r_nc_and_abeta" || calcium_source == "ip3r_hc_and_abeta")
         Jabeta = (Iabeta/(z*F*Vol_tmnal))*1e-03;            % uM/ms   Calcium influx from the extracellular space to cytosol
         %Jabeta = fabeta; 
         Jdiff_abeta = Kdiff_abeta_vgcc * (Cabeta - Ca_vgcc);   % uM/ms   Diffusion from Abeta pore sub-plasmalemmal compartment

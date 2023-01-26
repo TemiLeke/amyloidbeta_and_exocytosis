@@ -10,7 +10,8 @@ root = strcat(fileparts(fileparts(pwd)), "/data/PairedPulse_data/");
 
 %%   PPR, Probability, Release Rates and other plots
 
-t = importdata(strcat(root, "time.txt"));
+base_dir = strcat(fileparts(fileparts(pwd)), "/data/");
+t = importdata(strcat(base_dir, "ppr_time.txt"));
 
 num_conditions = 3;                      % condition 1 corresponds to SamCoupling, 2 - AD Higher Coupling, 3 - WT Higher Coupling
 
@@ -37,21 +38,19 @@ Ca_IP3R_WT = cell(1, num_conditions);
 min_channel_num = 5;
 max_channel_num = 150;
 num_channels = int32(((max_channel_num - 5)/5) + 1);
-coupling_conditions = ["abeta", "ip3r_nc", "ip3r_nc_and_abeta", "ip3r_hc_and_abeta"];
+coupling_conditions = ["ip3r_nc", "ip3r_nc_and_abeta", "ip3r_hc_and_abeta"];
 
 
 for coupling_cond=1:length(coupling_conditions)
 
     condition = coupling_conditions(coupling_cond);
     
-    if condition == "abeta"
+    if condition == "ip3r_nc"
         k = 1;
-    elseif condition == "ip3r_nc"
-        k = 2;
     elseif condition == "ip3r_nc_and_abeta"
-        k = 3;
+        k = 2;
     elseif condition == "ip3r_hc_and_abeta"
-        k = 4;
+        k = 3;
     end
 
     len_stim_1 = 30000;
@@ -131,22 +130,20 @@ for coupling_cond=1:length(coupling_conditions)
 
     condition = coupling_conditions(coupling_cond);
     
-    if condition == "abeta"
+    if condition == "ip3r_nc"
         condition_index = 1;
-    elseif condition == "ip3r_nc"
-        condition_index = 2;
     elseif condition == "ip3r_nc_and_abeta"
-        condition_index = 3;
+        condition_index = 2;
     elseif condition == "ip3r_hc_and_abeta"
-        condition_index = 4;
+        condition_index = 3;
     end
 
         
     Pr_matrix_WT_stim1{condition_index} = rel_proba_stim1_WT{condition_index}(30000, :);
     Pr_matrix_WT_stim2{condition_index} = rel_proba_stim2_WT{condition_index}(30000, :);
     
-%     Pr_matrix_AD_stim1{condition_index} = rel_proba_stim1_AD{condition_index}(30000, :);
-%     Pr_matrix_AD_stim2{condition_index} = rel_proba_stim2_AD{condition_index}(30000, :);    
+    Pr_matrix_WT_stim1{condition_index} = rel_ves_stim1_WT{condition_index}(30000, :)./RRV_stim1_WT{condition_index}(30000-1, :);
+    Pr_matrix_WT_stim2{condition_index} = rel_ves_stim2_WT{condition_index}(30000, :)./RRV_stim2_WT{condition_index}(30000-1, :);  
     
     
     x = Pr_matrix_WT_stim1{condition_index};
@@ -158,15 +155,6 @@ for coupling_cond=1:length(coupling_conditions)
     PPR_WT_fit{condition_index} = PolyExponentialFit(params_ppr_WT{condition_index}, Pr_matrix_WT_stim1{condition_index});
     
    
-%     
-%     x = Pr_matrix_AD_stim1{condition_index};
-%     Y_AD = PPR_AD{condition_index};
-%     [params_AD] = lsqcurvefit(@(params_AD, x)PolyExponentialFit(params_AD, x),params_init_ppr, x, Y_AD, lb_ppr,ub_ppr);
-%                                     
-%     params_ppr_AD{condition_index} = params_AD;
-%     
-%     PPR_AD_fit{condition_index} = PolyExponentialFit(params_ppr_AD{condition_index}, Pr_matrix_AD_stim1{condition_index});
-    
 end
 
 
@@ -190,14 +178,12 @@ for coupling_cond=1:length(coupling_conditions)
 
     condition = coupling_conditions(coupling_cond);
     
-    if condition == "abeta"
+    if condition == "ip3r_nc"
         condition_index = 1;
-    elseif condition == "ip3r_nc"
-        condition_index = 2;
     elseif condition == "ip3r_nc_and_abeta"
-        condition_index = 3;
+        condition_index = 2;
     elseif condition == "ip3r_hc_and_abeta"
-        condition_index = 4;
+        condition_index = 3;
     end
     
     
@@ -209,16 +195,7 @@ for coupling_cond=1:length(coupling_conditions)
     
     Pr_matrix_WT_stim2_fit{condition_index} = PolynomialFit(params_pr2r1_WT{condition_index}, Pr_matrix_WT_stim1{condition_index});
     
-   
-    
-%     x = Pr_matrix_AD_stim1{condition_index};
-%     Y_AD = Pr_matrix_AD_stim2{condition_index};
-%     [params_AD] = lsqcurvefit(@(params_AD, x)PolynomialFit(params_AD, x),params_init_pr2r1, x, Y_AD, lb_pr2r1,ub_pr2r1);
-%                                     
-%     params_pr2r1_AD{condition_index} = params_AD;
-%     
-%     Pr_matrix_AD_stim2_fit{condition_index} = PolynomialFit(params_pr2r1_AD{condition_index}, Pr_matrix_AD_stim1{condition_index});
-    
+  
 end
 
 
@@ -250,24 +227,20 @@ for coupling_cond=1:length(coupling_conditions)
 
     condition = coupling_conditions(coupling_cond);
     
-    if condition == "abeta"
+    if condition == "ip3r_nc"
         condition_index = 1;
-    elseif condition == "ip3r_nc"
-        condition_index = 2;
     elseif condition == "ip3r_nc_and_abeta"
-        condition_index = 3;
+        condition_index = 2;
     elseif condition == "ip3r_hc_and_abeta"
-        condition_index = 4;
+        condition_index = 3;
     end
 
         
     % Cumulative Ca in response to first pulse
     
     VGCC_Ca_WT = cumtrapz(t(44000:73999), Ca_VGCC_WT{condition_index}(44000:73999, :), 1);
-    %VGCC_Ca_AD = cumtrapz(t(44000:73999), Ca_VGCC_AD{condition_index}(44000:73999, :), 1);
      
     Cumulative_Ca_VGCC_WT_stim2{condition_index} = VGCC_Ca_WT(end,:);
-    %Cumulative_Ca_VGCC_AD_stim2{condition_index} = VGCC_Ca_AD(end,:);
     
    
     x = Pr_matrix_WT_stim1{condition_index};
@@ -279,24 +252,14 @@ for coupling_cond=1:length(coupling_conditions)
     Cumulative_Ca_VGCC_WT_stim2_fit{condition_index} = LogitFit(params_cum2_WT{condition_index}, Pr_matrix_WT_stim1{condition_index});
     
    
-    
-%     x = Pr_matrix_AD_stim1{condition_index};
-%     Y_AD = Cumulative_Ca_VGCC_AD_stim2{condition_index};
-%     [params_AD] = lsqcurvefit(@(params_AD, x)LogitFit(params_AD, x),params_init_cum2, x, Y_AD, lb_cum2,ub_cum2);
-%                                     
-%     params_cum2_AD{condition_index} = params_AD;
-%     
-%     Cumulative_Ca_VGCC_AD_stim2_fit{condition_index} = LogitFit(params_cum2_AD{condition_index}, Pr_matrix_AD_stim1{condition_index});
-    
+   
     
     % Cumulative Ca in response to first pulse 
     
     
     VGCC_Ca_WT = cumtrapz(t(1:30000), Ca_VGCC_WT{condition_index}(1:30000, :), 1);
-    %VGCC_Ca_AD = cumtrapz(t(1:30000), Ca_VGCC_AD{condition_index}(1:30000, :), 1);
      
     Cumulative_Ca_VGCC_WT_stim1{condition_index} = VGCC_Ca_WT(end,:);
-    %Cumulative_Ca_VGCC_AD_stim1{condition_index} = VGCC_Ca_AD(end,:);
     
    
     x = Pr_matrix_WT_stim1{condition_index};
@@ -307,15 +270,7 @@ for coupling_cond=1:length(coupling_conditions)
     
     Cumulative_Ca_VGCC_WT_stim1_fit{condition_index} = LogitFit(params_cum2_WT{condition_index}, Pr_matrix_WT_stim1{condition_index});
     
-   
-%     x = Pr_matrix_AD_stim1{condition_index};
-%     Y_AD = Cumulative_Ca_VGCC_AD_stim1{condition_index};
-%     [params_AD] = lsqcurvefit(@(params_AD, x)LogitFit(params_AD, x),params_init_cum2, x, Y_AD, lb_cum2,ub_cum2);
-%                                     
-%     params_cum2_AD{condition_index} = params_AD;
-%     
-%     Cumulative_Ca_VGCC_AD_stim1_fit{condition_index} = LogitFit(params_cum2_AD{condition_index}, Pr_matrix_AD_stim1{condition_index});
-    
+
 end
 
 
@@ -358,21 +313,17 @@ for coupling_cond=1:length(coupling_conditions)
 
     condition = coupling_conditions(coupling_cond);
     
-    if condition == "abeta"
+    if condition == "ip3r_nc"
         condition_index = 1;
-    elseif condition == "ip3r_nc"
-        condition_index = 2;
     elseif condition == "ip3r_nc_and_abeta"
-        condition_index = 3;
+        condition_index = 2;
     elseif condition == "ip3r_hc_and_abeta"
-        condition_index = 4;
+        condition_index = 3;
     end
 
     
     [max_value_WT, max_index_WT] = max(rel_rate_WT{condition_index}(44000:stim2_end_idx , :), [], 1);
     max_index_WT = max_index_WT + 44000;
-%     [max_value_AD, max_index_AD] = max(rel_rate_AD{condition_index}(44000:stim2_end_idx , :), [], 1);
-%     max_index_AD = max_index_AD + 44000;
   
     for k=5:5:150
         
@@ -391,20 +342,6 @@ for coupling_cond=1:length(coupling_conditions)
                               
         P2B_Cummulative_VGCC_Ca_stim2_WT{condition_index}(1, j) = VGCC_Ca_WT(end);
         
-        
-%         release_rate_AD = rel_rate_AD{condition_index}(max_index_AD(1, j):stim2_end_idx , j);
-%         time_AD = t(1:stim2_end_idx-max_index_AD(1, j)+1);
-%         basal_index_AD = find(release_rate_AD <= threshold, 1);
-%         time_to_base_stim2_AD{condition_index}(1, j) = time_AD(basal_index_AD);
-%         
-%         ca_end_idx_AD = find(t(1:stim2_end_idx) >= str2double(num2str(time_to_base_stim2_AD{condition_index}(1, j) +...
-%                      t(max_index_AD(1, j)))), 1);
-%                  
-%         VGCC_Ca_AD = cumtrapz(t(max_index_AD(1, j): ca_end_idx_AD),...
-%                      Ca_VGCC_AD{condition_index}(max_index_AD(1, j):ca_end_idx_AD));
-%                               
-%         P2B_Cummulative_VGCC_Ca_stim2_AD{condition_index}(1, j) = VGCC_Ca_AD(end);
-
     
     end
     
@@ -417,15 +354,6 @@ for coupling_cond=1:length(coupling_conditions)
     params_ttb_WT{condition_index} = params_WT;
     
     time_to_base_stim2_WT_fit{condition_index} = ExponentialPolyFit(params_ttb_WT{condition_index}, Pr_matrix_WT_stim1{condition_index});
-    
-    
-%     x_AD = Pr_matrix_AD_stim1{condition_index};
-%     Y_AD = time_to_base_stim2_AD{condition_index};
-%     [params_AD] = lsqcurvefit(@(params_AD, x_AD)ExponentialPolyFit(params_AD, x_AD),params_init_ttb, x_AD, Y_AD, lb_ttb,ub_ttb);
-%                                     
-%     params_ttb_AD{condition_index} = params_AD;
-%     
-%     time_to_base_stim2_AD_fit{condition_index} = ExponentialPolyFit(params_ttb_AD{condition_index}, Pr_matrix_AD_stim1{condition_index});
     
     
         
@@ -441,17 +369,6 @@ for coupling_cond=1:length(coupling_conditions)
                                                         Pr_matrix_WT_stim1{condition_index});
     
     
-%     x_AD = Pr_matrix_AD_stim1{condition_index};
-%     Y_AD = P2B_Cummulative_VGCC_Ca_stim2_AD{condition_index};
-%     [params_AD] = lsqcurvefit(@(params_AD, x_AD) ExponentialPolyFit(params_AD, x_AD),params_init_p2bcum, x_AD,...
-%                  Y_AD, lb_p2bcum, ub_p2bcum);
-%                                     
-%     params_p2bcum_AD{condition_index} = params_AD;
-%     
-%     P2B_Cummulative_VGCC_Ca_stim2_AD_fit{condition_index} =  ExponentialPolyFit(params_p2bcum_AD{condition_index},...
-%                                                       Pr_matrix_AD_stim1{condition_index});
-    
-    
     
 end
                                    
@@ -465,9 +382,9 @@ figure
 
     % Facilitation Computed Using Release Probability vs Stimulus Number
     subplot(3, 2, 1)
-    plot(t(1: 80000), rel_rate_WT{1}((1: 80000), channel_index),"k-", 'LineWidth', 0.85, 'MarkerSize', 8)
+    plot(t(1: 80000), rel_rate_WT{1}((1: 80000), channel_index),"b-", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
-    plot(t(1: 80000), rel_rate_WT{2}((1: 80000), channel_index),"b-", 'LineWidth', 0.85, 'MarkerSize', 8)
+    plot(t(1: 80000), rel_rate_WT{2}((1: 80000), channel_index),"k-", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
     plot(t(1: 80000), rel_rate_WT{3}((1: 80000), channel_index),"r-", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
@@ -484,19 +401,19 @@ figure
     
  
     subplot(3, 2, 2)
-    plot(Pr_matrix_WT_stim1{1}, PPR_WT{1} ,"k.", 'LineWidth', 0.85, 'MarkerSize', 8)
+    plot(Pr_matrix_WT_stim1{1}, PPR_WT{1} ,"b.", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
-    plot(Pr_matrix_WT_stim1{1}, PPR_WT_fit{1} ,"k-", 'LineWidth', 0.85, 'MarkerSize', 8)
-    hold on
-    plot(Pr_matrix_WT_stim1{2}, PPR_WT{2} ,"b.", 'LineWidth', 0.85, 'MarkerSize', 8)
-    hold on
-    plot(Pr_matrix_WT_stim1{2}, PPR_WT_fit{2} ,"b-", 'LineWidth', 0.85, 'MarkerSize', 8)
+    plot(Pr_matrix_WT_stim1{2}, PPR_WT{2} ,"k.", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
     plot(Pr_matrix_WT_stim1{3}, PPR_WT{3} ,"r.", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
+    plot(Pr_matrix_WT_stim1{1}, PPR_WT_fit{1} ,"b-", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(Pr_matrix_WT_stim1{2}, PPR_WT_fit{2} ,"k-", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
     plot(Pr_matrix_WT_stim1{3}, PPR_WT_fit{3} ,"r-", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on 
-    legend({'A\beta', 'IP_{3}R', 'A\beta & IP_{3}R'}, 'Location', 'northeast', 'FontSize',3)
+    legend({'IP_{3}R-NC', 'A\beta & IP_{3}R-NC', 'A\beta & IP_{3}R-HC'}, 'Location', 'northeast', 'FontSize',6)
     ylabel('PPR','FontSize',4,'FontWeight','bold','Color','k')
     xlabel('Pr','FontSize',4,'FontWeight','bold','Color','k')
     xlim([0 0.6])
@@ -507,15 +424,15 @@ figure
     title('(B)', 'FontSize', 7);
     hold off
 
-
+%{
     subplot(3, 2, 3)
-    plot(Pr_matrix_WT_stim1{1}, Cumulative_Ca_VGCC_WT_stim2{1} ,"k.", 'LineWidth', 0.85, 'MarkerSize', 8)
+    plot(Pr_matrix_WT_stim1{1}, Cumulative_Ca_VGCC_WT_stim2{1} ,"b.", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
-    plot(Pr_matrix_WT_stim1{1}, Cumulative_Ca_VGCC_WT_stim2_fit{1} ,"k-", 'LineWidth', 0.85, 'MarkerSize', 8)
+    plot(Pr_matrix_WT_stim1{1}, Cumulative_Ca_VGCC_WT_stim2_fit{1} ,"b-", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
-    plot(Pr_matrix_WT_stim1{2}, Cumulative_Ca_VGCC_WT_stim2{2} ,"b.", 'LineWidth', 0.85, 'MarkerSize', 8)
+    plot(Pr_matrix_WT_stim1{2}, Cumulative_Ca_VGCC_WT_stim2{2} ,"k.", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
-    plot(Pr_matrix_WT_stim1{2}, Cumulative_Ca_VGCC_WT_stim2_fit{2} ,"b-", 'LineWidth', 0.85, 'MarkerSize', 8)
+    plot(Pr_matrix_WT_stim1{2}, Cumulative_Ca_VGCC_WT_stim2_fit{2} ,"k-", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
     plot(Pr_matrix_WT_stim1{3}, Cumulative_Ca_VGCC_WT_stim2{3} ,"r.", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
@@ -528,17 +445,58 @@ figure
     set(gca,'XTickLabel',a,'FontName','Times','fontsize',6);
     set(gca,'XTickLabelMode','auto')
     title('(C)', 'FontSize', 7);
-    hold off    
+    hold off  
+%}
 
-    
+    subplot(3, 2, 3)
+    plot(t(1: 30000), RRV_stim1_WT{1}((1: 30000), channel_index),"b-", 'LineWidth',  0.85, 'MarkerSize', 8)
+    hold on
+    plot(t(30001: 60000), RRV_stim2_WT{1}((1: 30000), channel_index),"b-", 'LineWidth',  0.85, 'MarkerSize', 8)
+    hold on
+    plot(t(1: 30000), RRV_stim1_WT{2}((1: 30000), channel_index),"k-", 'LineWidth',  0.85, 'MarkerSize', 8)
+    hold on
+    plot(t(30001: 60000), RRV_stim2_WT{2}((1: 30000), channel_index),"k-", 'LineWidth',  0.85, 'MarkerSize', 8)
+    hold on
+    plot(t(1: 30000), RRV_stim1_WT{3}((1: 30000), channel_index), "r-", 'LineWidth',  0.85, 'MarkerSize', 8)
+    hold on 
+    plot(t(30001: 60000), RRV_stim2_WT{3}((1: 30000), channel_index),"r-", 'LineWidth',  0.85, 'MarkerSize', 8)
+    hold on  
+    ylabel('RRP (ms^{-1})','FontSize',4,'FontWeight','bold','Color','k')
+    xlabel('Time (ms)','FontSize',4,'FontWeight','bold','Color','k')
+    set(gca, 'box', 'off');
+    a = get(gca,'XTickLabel'); 
+    set(gca,'XTickLabel',a,'FontName','Times','fontsize',6);
+    set(gca,'XTickLabelMode','auto')
+    title('(C)', 'FontSize', 7);
+    hold off
+
     subplot(3, 2, 4)
-    plot(Pr_matrix_WT_stim1{1}, Pr_matrix_WT_stim2{1} ,"k.", 'LineWidth', 0.85, 'MarkerSize', 8)
+    plot(t(1: 80000), Async_RelRate_WT{1}((1: 80000), channel_index)*1e03,"b-", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
-    plot(Pr_matrix_WT_stim1{1}, Pr_matrix_WT_stim2_fit{1} ,"k-", 'LineWidth', 0.85, 'MarkerSize', 8)
+    plot(t(1: 80000), Async_RelRate_WT{2}((1: 80000), channel_index)*1e03,"k-", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
-    plot(Pr_matrix_WT_stim1{2}, Pr_matrix_WT_stim2{2} ,"b.", 'LineWidth', 0.85, 'MarkerSize', 8)
+    plot(t(1: 80000), Async_RelRate_WT{3}((1: 80000), channel_index)*1e03,"r-", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
-    plot(Pr_matrix_WT_stim1{2}, Pr_matrix_WT_stim2_fit{2} ,"b-", 'LineWidth', 0.85, 'MarkerSize', 8)
+    ylabel('Asynchronous Rate (10^{-3} ms^{-1})', 'FontSize',4,'FontWeight','bold','Color','k')
+    xlabel('Time (ms)','FontSize',4,'FontWeight','bold','Color','k')
+    set(gca, 'box', 'off');
+    a = get(gca,'XTickLabel');
+    set(gca,'XTickLabel',a,'FontName','Times','fontsize',6);
+    set(gca,'XTickLabelMode','auto')
+    title('(D)', 'FontSize', 7);
+    hold off
+
+
+
+%{    
+    subplot(3, 2, 4)
+    plot(Pr_matrix_WT_stim1{1}, Pr_matrix_WT_stim2{1} ,"b.", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(Pr_matrix_WT_stim1{1}, Pr_matrix_WT_stim2_fit{1} ,"b-", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(Pr_matrix_WT_stim1{2}, Pr_matrix_WT_stim2{2} ,"k.", 'LineWidth', 0.85, 'MarkerSize', 8)
+    hold on
+    plot(Pr_matrix_WT_stim1{2}, Pr_matrix_WT_stim2_fit{2} ,"k-", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
     plot(Pr_matrix_WT_stim1{3}, Pr_matrix_WT_stim2{3} ,"r.", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
@@ -552,16 +510,16 @@ figure
     set(gca,'XTickLabelMode','auto')
     title('(D)', 'FontSize', 7);
     hold off
-
+%}
     
     subplot(3, 2, 5)
-    plot(Pr_matrix_WT_stim1{1}, time_to_base_stim2_WT{1} ,"k.", 'LineWidth', 0.85, 'MarkerSize', 8)
+    plot(Pr_matrix_WT_stim1{1}, time_to_base_stim2_WT{1} ,"b.", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
-    plot(Pr_matrix_WT_stim1{1}, time_to_base_stim2_WT_fit{1} ,"k-", 'LineWidth', 0.85, 'MarkerSize', 8)
+    plot(Pr_matrix_WT_stim1{1}, time_to_base_stim2_WT_fit{1} ,"b-", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
-    plot(Pr_matrix_WT_stim1{2}, time_to_base_stim2_WT{2} ,"b.", 'LineWidth', 0.85, 'MarkerSize', 8)
+    plot(Pr_matrix_WT_stim1{2}, time_to_base_stim2_WT{2} ,"k.", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
-    plot(Pr_matrix_WT_stim1{2}, time_to_base_stim2_WT_fit{2} ,"b-", 'LineWidth', 0.85, 'MarkerSize', 8)
+    plot(Pr_matrix_WT_stim1{2}, time_to_base_stim2_WT_fit{2} ,"k-", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
     plot(Pr_matrix_WT_stim1{3}, time_to_base_stim2_WT{3} ,"r.", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
@@ -579,13 +537,13 @@ figure
 
 
     subplot(3, 2, 6)
-    plot(Pr_matrix_WT_stim1{1}, P2B_Cummulative_VGCC_Ca_stim2_WT{1} ,"k.", 'LineWidth', 0.85, 'MarkerSize', 8)
+    plot(Pr_matrix_WT_stim1{1}, P2B_Cummulative_VGCC_Ca_stim2_WT{1} ,"b.", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
-    plot(Pr_matrix_WT_stim1{1}, P2B_Cummulative_VGCC_Ca_stim2_WT_fit{1} ,"k-", 'LineWidth', 0.85, 'MarkerSize', 8)
+    plot(Pr_matrix_WT_stim1{1}, P2B_Cummulative_VGCC_Ca_stim2_WT_fit{1} ,"b-", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
-    plot(Pr_matrix_WT_stim1{2}, P2B_Cummulative_VGCC_Ca_stim2_WT{2} ,"b.", 'LineWidth', 0.85, 'MarkerSize', 8)
+    plot(Pr_matrix_WT_stim1{2}, P2B_Cummulative_VGCC_Ca_stim2_WT{2} ,"k.", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
-    plot(Pr_matrix_WT_stim1{2}, P2B_Cummulative_VGCC_Ca_stim2_WT_fit{2} ,"b-", 'LineWidth', 0.85, 'MarkerSize', 8)
+    plot(Pr_matrix_WT_stim1{2}, P2B_Cummulative_VGCC_Ca_stim2_WT_fit{2} ,"k-", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on
     plot(Pr_matrix_WT_stim1{3}, P2B_Cummulative_VGCC_Ca_stim2_WT{3} ,"r.", 'LineWidth', 0.85, 'MarkerSize', 8)
     hold on

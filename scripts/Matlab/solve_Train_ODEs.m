@@ -1,24 +1,22 @@
 clear all; close all;
 
-
 %% Description
+
 %       This script simulates calcium dynamics, neurotransmitter release in
-%       physiologically plausible hippocampal CA1 terminal mode. 
+%       physiologically plausible hippocampal CA1 terminal model. 
 %       All simulations have a time step of 1 us (i,e 0.001 ms). We
 %       simulated fo 50 trials and calculated average response for VGGC 
 %       values in the range= 5--150 (represented as k in simulation). 
 %       Release probability in response to an AP is calculated by
 %       integrating the release rate for slow and fast 
 %       vesicles divided by the number of RRV initially in both pools.
-%       Simulations for single AP and paired pulse protocol were run for
-%       100ms, while AP Train simulation were done for 450 ms. For paired
-%       pulse protocol, the total duration of each pulse is 30ms. ISI can be
+%       Simulations for single AP and paired pulse protocol are run for
+%       100ms in seperate scripts, while AP Train simulation were done for 450 ms. 
+%       For paired pulse protocol, the total duration of each pulse is 30ms. ISI can be
 %       modified as desired. AP train of 20Hz was used in our simulations.
 %       Simulation results (average of 50 trials) are saved to an automatically created data
 %       directory for each VGCC number.
-%       The simulation runs for all coupling configurations
-%       (High Coupling and Low Coupling as describes in paper) and cell conditions (WT and AD).
-
+ 
 
 %% Model Parameters and Configuration
 
@@ -32,36 +30,41 @@ clear all; close all;
 %       The coupled ODE system is solved using the RK4 algorithm as other
 %       inbuilt methods appear unstable with stochastic kinetic schemes.
 
+
 %% Note:
 
 %       Please note that all files; "kinetic_schemes.m", "ODEs.m",
 %       "solve_Train_ODEs.m", "solve_PPR_ODEs.m", and
-%       "solve_singleAP_ODEs.m" have to be in the same directory for
+%       "solveSingleAP_ODEs.m" have to be in the same directory for
 %       simulation to run without hiccups. 
+
 
 %% Simulation
 
-global dt N_ip3r N_vgcc N_vesicles state_ip3r state_PQ time; % set global variables
+global dt N_ip3r N_vgcc N_vesicles N_pores state_ip3r state_PQ time SCL; % set global variables
 
-coupling_conditions = ["Higher_Coupling_WT", "Higher_Coupling_AD", "Same_Coupling"]; % Coupling configuration
-cell_conditions = ["WT", "AD"];                              %     Cell condition (WT or AD)
 
-for coupling_cond=1:length(coupling_conditions)
-    
-    coupling_condition = coupling_conditions(coupling_cond); 
-        
-    data_directory = strcat("../../data/Train_data/", coupling_condition, "/");
+coupling_condition = "Same_Coupling";               %  Coupling configuration
+ca_source = ["abeta", "ip3r_nc", "ip3r_nc_and_abeta", "ip3r_hc_and_abeta"];    %  Additional Ca Source to the AZ
+
+for index=1:length(ca_source)
+    calcium_source = ca_source(index);
+
+    if (calcium_source == "ip3r_hc_and_abeta" || calcium_source=="abeta")
+        cell_condition = "AD";                                                  %  Cell condition (WT or AD)
+    elseif (calcium_source == "ip3r_nc_and_abeta" || calcium_source=="ip3r_nc") 
+        cell_condition = "WT";                                                  %  Cell condition (WT or AD) 
+    end
+
+
+
+    data_directory = strcat("../../data/APTrain_data/", calcium_source, "/");
     mkdir(data_directory)
-    
-    for cell_cond=1:length(cell_conditions)
-        
-        cell_condition = cell_conditions(cell_cond);            %     Cell condition (WT or AD)
         
         for k=5:5:150     % Interation over Number of channels ranging from 5 to 150 VGCC number
 
             num_trials = 50;                                                        % Number of trials
-            time_steps = 450000;           % numbser of time steps     (equivalent to 450 ms for steps of 0.001 ms)
-
+            time_steps = 450000;           % numbser of time steps     (equivalent to 100 ms for steps of 0.001 ms)
             % Matrix for storing release model variables for all trials             % Dimension --> (Number of trails, Number of time steps)
 
             DualSensorModel_release_rate = zeros(num_trials, time_steps);           % Overall release rate 
@@ -83,12 +86,10 @@ for coupling_cond=1:length(coupling_conditions)
             IP3R_Calcium = zeros(num_trials, time_steps);       % Calcium concentration in IP3R cluster
             Cyto_Calcium = zeros(num_trials, time_steps);       % Calcium concentration in Cytosol    
 
-
             for n=1:num_trials
                 %% Parameters for Simulation
 
-
-                nt = time_steps;       % numbser of time steps     (equivalent to 100 ms for steps of 0.001 ms) 
+                nt = time_steps;       % numbser of time steps     (equivalent to 100 ms for steps of 0.001 ms)
                 dt = 0.001;            % time step for integration (1 uS (micro-second) or 0.001 mS) 
                 dT_save = 0.001;       % time step for saving data
                 nn = fix(dT_save/dt);  % skip every nn steps before saving data
@@ -100,17 +101,17 @@ for coupling_cond=1:length(coupling_conditions)
                 N_ip3r  = 10;                        % number of IP3R channels 
                 N_vgcc = k;                          % number of VGCC (k is specified in loop)
                 N_vesicles = 200;                    % number of vesicles
-                state_ip3r = ones(1, N_ip3r);        % initial state of each IP3R channel is R. Markov Chain Legend R=1, A=2, O=3, I=4
+                N_pores = 200;                       % number of abeta pores
+                SCL = 1;                             % Subconductance level            
+                state_ip3r = ones(1, N_ip3r);        % Initial state of each IP3R channel is R. Markov Chain Legend R=1, A=2, O=3, I=4
                 state_PQ = zeros(1, N_vgcc);         % Initial state of each VGCC ia C1. Markov Chain Legend C1=1, C2=2, C3=3, C4=4, O=5
-
 
                 %% Initial Conditions For Deterministic Simulation
 
-
-                y = zeros(num_ode, time_steps);              % Solutions. dimension = (Number of ODes x Number of Time Steps)
+                y = zeros(num_ode, nt);              % Solutions. dimension = (Number of ODes x Number of Time Steps)
 
                 y(:,1) = [0.1; 0.1; 56; -70; 0.01; 0.01;...  % dCacdt; dCa_iprdt; dCtdt; dvdt; dn2dt; dh2dt
-                          1; 1; 0.16; 15;...                 % dPLCdt; dGdt; dIP3dt; dGlutdt;
+                          1; 1; 0.16; 0.1;...                % dPLCdt; dGdt; dIP3dt; dCabetadt;
                           0.1;...                            % dCa_vgccdt
                           170; 20; 0; 0; 5; 0; 0; 0; 0; 0; 5; 0; 0; 0; 0; 0;...    % dR_allodt; dU_allodt; dRFv_allodt; dRFw_allodt; dV0dt; dV1dt; dV2dt; dV3dt; dV4dt; dV5dt; dW0dt; dW1dt; dW2dt; dW3dt; dW4dt; dW5dt
                           170; 20; 0; 0;...                                        % dR_dualdt; dU_dualdt; dRFv_dualdt; dRFw_dualdt
@@ -120,25 +121,50 @@ for coupling_cond=1:length(coupling_conditions)
 
                 %% Simulation
 
-                AP_condition = "Single";
-                ISI = 40;                         % ms  Inter-spike Interval for Paired-Pulse protocol
-                abeta_dose = 0;                   %     Amyloid beta dose used WT: 0 ug/mL AD: 3 ug/mL
-                Pr_ip3r = zeros(1, time_steps);            %     Initialize all IP3R open probabilities to zero 
-                IcaPQ_type = zeros(1, time_steps);         %     Initialize all Single channel currents to zero 
-                t = 0;                            %     Initialize time t = 0
+                AP_condition = "Train";
+                ISI = 40;                                           % ms    Inter-spike Interval for Paired-Pulse protocol
+                abeta_dose = 0;                                     % ug/mL Amyloid beta dose used WT: 0 ug/mL AD: 3 ug/mL
+                IcaPQ_type = zeros(1, nt);                          % uA    Initialize all Single channel currents to zero 
+                Pr_ip3r = zeros(1, nt);                             %       Initialize all IP3R open probabilities to zero 
+                t = 0;                                              % ms    Initialize time t = 0
+                
+                init_open_time = 0;                                 % ms    Initial abeta open time
+                close_time = nt*dt;                                 % ms    Time when all pores close
+                mean_open_time = 10;                                % ms    Mean open duration of the pore
+                exp_duration = nt*dt;                               % ms    duration of experimental recordings corresponding to (20-30s) in Syed Paper ; https://doi.org/10.1101/2022.04.29.490101 doi:               
+                mean_open_proba = 0.015;                            %       Mean open probability
+                total_open_time = mean_open_proba*exp_duration;     % ms    Total duration of pore opening  
 
+                if  total_open_time/mean_open_time < 1
+                    sample_times = init_open_time:dt:close_time;
+                    num_open_events = 1;                                                    %   number of events
+                    open_times = sort(randsample(sample_times, num_open_events));           %   randomly chosen open times of the abeta pores
+                    pore_open_times = (open_times(1):dt:(open_times(1)+total_open_time));
+                else 
+                    times = init_open_time:dt:close_time;
+                    sample_times = times(1:mean_open_time/dt:end);
+                    num_open_events = round(total_open_time/mean_open_time);                %   number of events
+                    open_times = sort(randsample(sample_times, num_open_events));           %   randomly chosen open times of the abeta pores
+                    pore_open_times = (open_times(1):dt:(open_times(1)+mean_open_time));
 
-                for i = 2:time_steps
+                    for open_event=2:length(open_times)
+                        pore_open_times = [pore_open_times, (open_times(open_event):dt:(open_times(open_event) + mean_open_time))];
+                    end
+
+                end
+                
+
+                for i = 2:nt
                     yn = y(:,i-1);                                         % variable values at previous time step  
 
                     % Runge-Kutta Method
 
                     for j = 1:nn                                                     % this loop is used so that we don't have to save data at each time step
                         [Po_ip3r, IcaPQ] = kinetic_schemes(yn, cell_condition);      % compute the open probability at current time   
-                        k1 = ODEs(t, yn, Po_ip3r, IcaPQ, AP_condition, cell_condition, ISI, abeta_dose, coupling_condition);                          
-                        k2 = ODEs(t, yn + k1*dt/2, Po_ip3r, IcaPQ, AP_condition, cell_condition, ISI, abeta_dose, coupling_condition);
-                        k3 = ODEs(t, yn + k2*dt/2, Po_ip3r, IcaPQ, AP_condition, cell_condition, ISI, abeta_dose, coupling_condition);
-                        k4 = ODEs(t, yn + k3*dt, Po_ip3r, IcaPQ, AP_condition, cell_condition, ISI, abeta_dose, coupling_condition);
+                        k1 = ODEs(t, yn, Po_ip3r, IcaPQ, AP_condition, cell_condition, ISI, abeta_dose, coupling_condition, pore_open_times, calcium_source);                          
+                        k2 = ODEs(t, yn + k1*dt/2, Po_ip3r, IcaPQ, AP_condition, cell_condition, ISI, abeta_dose, coupling_condition, pore_open_times, calcium_source);
+                        k3 = ODEs(t, yn + k2*dt/2, Po_ip3r, IcaPQ, AP_condition, cell_condition, ISI, abeta_dose, coupling_condition, pore_open_times, calcium_source);
+                        k4 = ODEs(t, yn + k3*dt, Po_ip3r, IcaPQ, AP_condition, cell_condition, ISI, abeta_dose, coupling_condition, pore_open_times, calcium_source);
                         yn = yn + (k1 + 2*k2+ 2*k3 + k4)* dt/6;                      % Obtain solutions to ODEs at current time 
                     end
 
@@ -148,7 +174,6 @@ for coupling_cond=1:length(coupling_conditions)
                     t = (i)*dT_save;                % generate time array
 
                 end
-
 
                 t = (1: nt)*dT_save;        % generate time array for plotting
 
@@ -243,81 +268,80 @@ for coupling_cond=1:length(coupling_conditions)
             end
 
         %% Saving Data
-            filename  = sprintf("%s_Train_Rate_ReservePool_%d.txt", cell_condition, k);
+            filename  = sprintf("Train_Rate_ReservePool_%d.txt", k);
             fileID = fopen(strcat(data_directory, filename), "w");
-            fprintf(fileID, "%.15f\n", mean(DualSensorModel_Rate_ReservePool));
+            fprintf(fileID, "%.15f\n", mean(DualSensorModel_Rate_ReservePool, 1));
             fclose(fileID);
 
-            filename  = sprintf("%s_Train_Rate_DockedPool_%d.txt", cell_condition, k);
+            filename  = sprintf("Train_Rate_DockedPool_%d.txt", k);
             fileID = fopen(strcat(data_directory, filename), "w");
-            fprintf(fileID, "%.15f\n", mean(DualSensorModel_Rate_DockedPool));
+            fprintf(fileID, "%.15f\n", mean(DualSensorModel_Rate_DockedPool, 1));
             fclose(fileID);
 
-            filename  = sprintf("%s_Train_AsyncRelRate_%d.txt", cell_condition, k);
+            filename  = sprintf("Train_AsyncRelRate_%d.txt", k);
             fileID = fopen(strcat(data_directory, filename), "w");
-            fprintf(fileID, "%.15f\n", mean(DualSensorModel_AsyncRelRate));
+            fprintf(fileID, "%.15f\n", mean(DualSensorModel_AsyncRelRate, 1));
             fclose(fileID);
 
-            filename  = sprintf("%s_Train_SyncRelRate_%d.txt", cell_condition, k);
+            filename  = sprintf("Train_SyncRelRate_%d.txt", k);
             fileID = fopen(strcat(data_directory, filename), "w");
-            fprintf(fileID, "%.15f\n", mean(DualSensorModel_SyncRelRate));
+            fprintf(fileID, "%.15f\n", mean(DualSensorModel_SyncRelRate, 1));
             fclose(fileID);
 
-            filename  = sprintf("%s_Train_SpontRelRate_%d.txt", cell_condition, k);
+            filename  = sprintf("Train_SpontRelRate_%d.txt", k);
             fileID = fopen(strcat(data_directory, filename), "w");
-            fprintf(fileID, "%.15f\n", mean(DualSensorModel_SpontRelRate));
+            fprintf(fileID, "%.15f\n", mean(DualSensorModel_SpontRelRate, 1));
             fclose(fileID);
 
-            filename  = sprintf("%s_Train_SlowRelRate_%d.txt", cell_condition, k);
+            filename  = sprintf("Train_SlowRelRate_%d.txt", k);
             fileID = fopen(strcat(data_directory, filename), "w");
-            fprintf(fileID, "%.15f\n", mean(DualSensorModel_SlowRelRate));
+            fprintf(fileID, "%.15f\n", mean(DualSensorModel_SlowRelRate, 1));
             fclose(fileID);
 
-            filename  = sprintf("%s_Train_FastRelRate_%d.txt", cell_condition, k);
+            filename  = sprintf("Train_FastRelRate_%d.txt", k);
             fileID = fopen(strcat(data_directory, filename), "w");
-            fprintf(fileID, "%.15f\n", mean(DualSensorModel_FastRelRate));
+            fprintf(fileID, "%.15f\n", mean(DualSensorModel_FastRelRate, 1));
             fclose(fileID);
 
-            filename  = sprintf("%s_Train_RelRate_%d_VGCC.txt", cell_condition, k);
+            filename  = sprintf("Train_RelRate_%d_VGCC.txt", k);
             fileID = fopen(strcat(data_directory, filename), "w");
             fprintf(fileID, "%.15f\n", mean(DualSensorModel_release_rate, 1));
             fclose(fileID);
 
-            filename  = sprintf("%s_Train_RelVes_%d_VGCC.txt", cell_condition, k);
+            filename  = sprintf("Train_RelVes_%d_VGCC.txt", k);
             fileID = fopen(strcat(data_directory, filename), "w");
             fprintf(fileID, "%.15f\n", mean(DualSensorModel_released_vesicles, 1));
             fclose(fileID);
 
-            filename  = sprintf("%s_Train_RRV_%d_VGCC.txt", cell_condition, k);
+            filename  = sprintf("Train_RRV_%d_VGCC.txt", k);
             fileID = fopen(strcat(data_directory, filename), "w");
             fprintf(fileID, "%.15f\n", mean(DualSensorModel_RRV, 1));
             fclose(fileID);  
 
-            filename  = sprintf("%s_Train_Fast_RRV_%d_VGCC.txt", cell_condition, k);
+            filename  = sprintf("Train_Fast_RRV_%d_VGCC.txt", k);
             fileID = fopen(strcat(data_directory, filename), "w");
             fprintf(fileID, "%.15f\n", mean(DualSensorModel_Fast_RRV, 1));
             fclose(fileID); 
 
-            filename  = sprintf("%s_Train_Slow_RRV_%d_VGCC.txt", cell_condition, k);
+            filename  = sprintf("Train_Slow_RRV_%d_VGCC.txt", k);
             fileID = fopen(strcat(data_directory, filename), "w");
             fprintf(fileID, "%.15f\n", mean(DualSensorModel_Slow_RRV, 1));
             fclose(fileID); 
 
-            filename  = sprintf("%s_Train_IP3_Calcium_%d_VGCC.txt", cell_condition, k);
+            filename  = sprintf("Train_IP3_Calcium_%d_VGCC.txt", k);
             fileID = fopen(strcat(data_directory, filename), "w");
-            fprintf(fileID, "%.15f\n", mean(IP3R_Calcium));
+            fprintf(fileID, "%.15f\n", mean(IP3R_Calcium, 1));
             fclose(fileID);
 
-            filename  = sprintf("%s_Train_VGCC_Calcium_%d_VGCC.txt", cell_condition, k);
+            filename  = sprintf("Train_VGCC_Calcium_%d_VGCC.txt", k);
             fileID = fopen(strcat(data_directory, filename), "w");
-            fprintf(fileID, "%.15f\n", mean(VGCC_Calcium));
+            fprintf(fileID, "%.15f\n", mean(VGCC_Calcium, 1));
             fclose(fileID);
 
-            filename  = sprintf("%s_Train_CYTO_Calcium_%d_VGCC.txt", cell_condition, k);
+            filename  = sprintf("Train_CYTO_Calcium_%d_VGCC.txt", k);
             fileID = fopen(strcat(data_directory, filename), "w");
-            fprintf(fileID, "%.15f\n", mean(Cyto_Calcium));
+            fprintf(fileID, "%.15f\n", mean(Cyto_Calcium, 1));
             fclose(fileID);
 
         end
-    end
 end

@@ -16,8 +16,7 @@ clear all; close all;
 %       modified as desired. AP train of 20Hz was used in our simulations.
 %       Simulation results (average of 50 trials) are saved to an automatically created data
 %       directory for each VGCC number.
-%       The simulation runs for low-coupling configuration
-%       (as described in Cells 2022 Adeoye et.al) of the IP3R nanodomain and AZ.
+
  
 
 %% Model Parameters and Configuration
@@ -42,15 +41,15 @@ clear all; close all;
 
 %% simulation
 
-global dt N_ip3r N_vgcc N_vesicles N_pores state_ip3r state_PQ time; % set global variables
+global dt N_ip3r N_vgcc N_vesicles N_pores state_ip3r state_PQ time SCL; % set global variables
 
 coupling_condition = "Same_Coupling";               %  Coupling configuration
-ca_source = ["abeta", "ip3r_nc", "ip3r_nc_and_abeta", "ip3r_hc_and_abeta"];    %  Additional Ca Source to the AZ
+ca_source = ["ip3r_nc", "ip3r_nc_and_abeta", "ip3r_hc_and_abeta"];    % Additional Ca Source to the AZ
 
 for index=1:length(ca_source)
     calcium_source = ca_source(index);
 
-    if (calcium_source == "ip3r_hc_and_abeta" || calcium_source=="abeta")
+    if (calcium_source == "ip3r_hc_and_abeta")
         cell_condition = "AD";                                                  %  Cell condition (WT or AD)
     elseif (calcium_source == "ip3r_nc_and_abeta" || calcium_source=="ip3r_nc") 
         cell_condition = "WT";                                                  %  Cell condition (WT or AD) 
@@ -101,6 +100,7 @@ for index=1:length(ca_source)
                 N_vgcc = k;                          % number of VGCC (k is specified in loop)
                 N_vesicles = 200;                    % number of vesicles
                 N_pores = 200;                       % number of abeta pores
+                SCL = 1;                             % Subconductance level
                 state_ip3r = ones(1, N_ip3r);        % initial state of each IP3R channel is R. Markov Chain Legend R=1, A=2, O=3, I=4
                 state_PQ = zeros(1, N_vgcc);         % Initial state of each VGCC ia C1. Markov Chain Legend C1=1, C2=2, C3=3, C4=4, O=5
 
@@ -142,7 +142,8 @@ for index=1:length(ca_source)
                     open_times = sort(randsample(sample_times, num_open_events));           %   randomly chosen open times of the abeta pores
                     pore_open_times = (open_times(1):dt:(open_times(1)+total_open_time));
                 else 
-                    sample_times = init_open_time:10:close_time;
+                    times = init_open_time:dt:close_time;
+                    sample_times = times(1:mean_open_time/dt:end);
                     num_open_events = round(total_open_time/mean_open_time);                       %   number of events
                     open_times = sort(randsample(sample_times, num_open_events));           %   randomly chosen open times of the abeta pores
                     pore_open_times = (open_times(1):dt:(open_times(1)+mean_open_time));
@@ -345,5 +346,4 @@ for index=1:length(ca_source)
                 fprintf(fileID, "%.15f\n", mean(Abeta_Calcium, 1));
                 fclose(fileID);
         end
-
 end
